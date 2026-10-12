@@ -1,0 +1,18 @@
+## Interface: 16001
+## Title: Forever Fit
+## Notes: Exercise reminders for adventurers. Keep moving between quests!
+## Author: Forever Fit
+## Version: 0.1.31
+## SavedVariables: ForeverFitDB
+## SavedVariablesPerCharacter: ForeverFitCharDB
+## IconTexture: Interface\Icons\Ability_Warrior_Charge
+## Category: Miscellaneous
+
+Exercises.lua
+Core.lua
+Popup.lua
+DefaultOptions.lua
+Info.lua
+Options.lua
+Achievements.lua
+CustomOptions.lua
