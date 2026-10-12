@@ -1,4 +1,4 @@
-# Forever Fit v0.1.31
+# Forever Fit v1.0
 
 Forever Fit is a World of Warcraft: Forever addon that turns quiet moments between quests into short exercise reminders. Configure the workout interval, choose built-in or custom exercises, and earn fitness achievements through the game's Legacy Challenges interface.
 
@@ -27,6 +27,7 @@ The **Preview / Move / Resize** button on the main settings page opens an editab
 
 ## Changelog
 
+- **v1.0** — Released in current state
 - **v0.1.31** — Added optional campfire reminders, a five-minute login grace period, and account-wide achievement progress.
 - **v0.1.30** — Fixed a login Lua error with custom exercises while registering achievement chat links; saved exercise data remains unchanged.
 
