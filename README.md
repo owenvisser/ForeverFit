@@ -1,4 +1,4 @@
-# Forever Fit 1.1.0 — MVC-style source organization
+# Forever Fit 1.1.0
 
 Forever Fit is a World of Warcraft: Forever addon that delivers workout reminders, editable custom exercises, and Fitness Challenges. This package reorganizes the original Lua code by responsibility without changing the existing SavedVariables schemas or built-in exercise IDs.
 
@@ -84,3 +84,18 @@ In `Views/Settings/OptionsTheme.lua`, use `FF.OptionsTheme.COMMON` to adjust mar
 - Separated game event coordination and settings registration into `Controllers/`.
 - Renamed interface files around their actual tab and component responsibilities under `Views/`.
 - Preserved original external `FF:` methods, achievement IDs, saved-variable keys, and the WoW load-order mechanism.
+
+### Channelog
+v1.1.0 - Shared settings layouts and widgets; centralized editable options theme.
+v0.1.31 - Added campfire reminders, five-minute login protection, and account-wide achievements.
+v0.1.30 - Fixed a login Lua error when custom exercises were included in achievement chat-link registration.
+v0.1.29 - Matched cheer/chicken voices to race and gender; added Human Male Only sound option.
+v0.1.28 - Moved instructions beside the exercise icon; locked regular popups against moving and resizing.
+v0.1.27 - Added a movable, resizable popup preview with per-character saved layout.
+v0.1.26 - Independent vertical spacing controls for each settings page; streamlined Info page.
+v0.1.25 - Organized main, Default Exercises, Custom Exercises, and Info settings pages.
+v0.1.24 - Fixed settings refresh errors after creating custom exercises.
+v0.1.23 - Added custom exercises, Other challenges, and the Cheater apology.
+v0.1.22 - Switched workout sounds to native cheer and chicken audio.
+v0.1.21 - Allowed all exercises to be disabled, pausing reminders automatically.
+v0.1.20 - Flexible milestone requirements and settings-to-challenges navigation.
