@@ -85,7 +85,7 @@ In `Views/Settings/OptionsTheme.lua`, use `FF.OptionsTheme.COMMON` to adjust mar
 - Renamed interface files around their actual tab and component responsibilities under `Views/`.
 - Preserved original external `FF:` methods, achievement IDs, saved-variable keys, and the WoW load-order mechanism.
 
-### Channelog
+### Changelog
 v1.1.0 - Shared settings layouts and widgets; centralized editable options theme.
 v0.1.31 - Added campfire reminders, five-minute login protection, and account-wide achievements.
 v0.1.30 - Fixed a login Lua error when custom exercises were included in achievement chat-link registration.
