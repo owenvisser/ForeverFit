@@ -2,17 +2,27 @@
 ## Title: Forever Fit
 ## Notes: Exercise reminders for adventurers. Keep moving between quests!
 ## Author: Forever Fit
-## Version: 0.1.31
+## Version: 1.1.0
 ## SavedVariables: ForeverFitDB
 ## SavedVariablesPerCharacter: ForeverFitCharDB
 ## IconTexture: Interface\Icons\Ability_Warrior_Charge
 ## Category: Miscellaneous
 
-Exercises.lua
 Core.lua
-Popup.lua
-DefaultOptions.lua
-Info.lua
-Options.lua
-Achievements.lua
-CustomOptions.lua
+Data\Exercises.lua
+Data\AchievementDefinitions.lua
+Models\ExerciseModel.lua
+Models\DatabaseModel.lua
+Models\StatisticsModel.lua
+Models\AchievementModel.lua
+Controllers\WorkoutController.lua
+Controllers\AchievementController.lua
+Controllers\SettingsController.lua
+Views\PopupView.lua
+Views\AchievementsView.lua
+Views\Settings\OptionsTheme.lua
+Views\Settings\OptionsWidgets.lua
+Views\Settings\DefaultExercisesTab.lua
+Views\Settings\CustomExercisesTab.lua
+Views\Settings\InfoTab.lua
+Views\Settings\GeneralTab.lua

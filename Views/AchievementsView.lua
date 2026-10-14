@@ -1,162 +1,46 @@
 local _, FF = ...
 
--- Completed sessions per exercise; the native Legacy system remains unaffected.
-FF.achievementTiers = {
-    { name = "Bronze", target = 1, color = { 0.76, 0.47, 0.24 } },
-    { name = "Silver", target = 10, color = { 0.72, 0.76, 0.81 } },
-    { name = "Gold", target = 50, color = { 0.98, 0.77, 0.20 } },
-    { name = "Platinum", target = 250, color = { 0.35, 0.85, 0.80 } },
-    { name = "Diamond", target = 1000, color = { 0.55, 0.70, 1.0 } },
-}
-
--- Five progressively more ridiculous titles per exercise.
-FF.achievementNames = {
-    pushups = { "Northshire Push-up Recruit", "Scarlet Monastery Press Corps", "Arms Like Anduin", "Mogging Thrall", "The Push-up Lich King" },
-    wallpushups = { "Goldshire Wall Leaner", "Stormwind Wall Inspector", "Keeper of Hellfire Ramparts", "Blackrock Wall Brawler", "The Great Wall of Gilneas" },
-    squats = { "Dun Morogh Squat Recruit", "Dwarven Leg Day", "Thunder Bluff Thunder Thighs", "Sargeras Skips Leg Day", "Titanforged Quads" },
-    lunges = { "Lordaeron Lunge Recruit", "A Peon's First Step", "The Stride of Stratholme", "Lunging Through the Dark Portal", "Illidan's Unprepared Leg Day" },
-    calfraises = { "Elwynn Tiptoe Apprentice", "Gadgetzan Calf Cartel", "Mount Hyjal High Heels", "Calves of the Old Gods", "Archimonde's Ankle Day" },
-    jumpingjacks = { "Dun Morogh Jumping Recruit", "Gnomeregan Jump Jet", "Murloc Evasion Maneuver", "Leaper of the Dark Portal", "Jacked by the Light" },
-    plank = { "Stormwind Floor Sentinel", "Darnassus Bridge Plank", "Shield Wall of Ironforge", "The Unmoving Blackrock", "The Plank King of Northrend" },
-    curls = { "Goldshire Curl Initiate", "Biceps for the Horde", "Gains of Ironforge", "Thrall's Training Partner", "Swole of the Titans" },
-    press = { "Stormwind Shoulder Squire", "Gryphon Rider Press", "Karazhan Overhead Overlord", "Pressing Sulfuras Skyward", "The Shoulders of Sargeras" },
-    rows = { "Booty Bay Rowboat Rookie", "Pulling Aggro in Ragefire", "Oar Master of Booty Bay", "Tug-of-War with Deathwing", "Row, Row, Row Your Raid" },
-    gobletsquats = { "Gadgetzan Goblet Goblin", "Squat and Loot in the Deadmines", "Ironforge Tavern's Strongest Legs", "The Goblet of the Old Gods", "The Squatfather of Stormwind" },
-    laterals = { "Darnassus Little Wings", "Flight Form Apprentice", "Delts of the Argent Dawn", "Wings of the Val'kyr", "Shoulders of the Pantheon" },
-    deadlifts = { "Elwynn Loot Lifter", "Ironforge Inventory Overweight", "Blackrock Epic Loot Hauler", "Azeroth's Moving Company", "Lifting the Dark Portal" },
-    easywalk = { "First Steps in Elwynn", "Goldshire Stroller", "Road to Redridge", "Stormwind Footman of the Year", "The Eternal Wanderer of Azeroth" },
-    briskwalk = { "Brisk Stormwind Recruit", "Outrunning a Murloc", "Boots of Minor Speed", "Strider of Stranglethorn", "Faster Than Your Hearthstone" },
-    inclineeasy = { "Dun Morogh Hillwalker", "Climbing the Wetlands Pass", "Footman of Alterac", "Trailblazer of Mount Hyjal", "Summiting Icecrown on Foot" },
-    inclinebrisk = { "Brisk Dun Morogh Climber", "Hustling up Thunder Bluff", "Race to Blackrock Spire", "Sprint to the Peaks of Hyjal", "Outrunning the Storm Peaks" },
-    shrugs = { "Ironforge Trap Recruit", "Shoulders up for the King", "Traps of Blackrock", "Shrugging Off Deathwing", "The Titanforged Trapezius" },
-    triceps = { "Silvermoon Triceps Initiate", "Triceps of the Scarlet Crusade", "Triceps for the Argent Tournament", "Elbows of the Naaru", "The Lich King's Overhead Lockout" },
-}
-
--- General achievements include cumulative prescribed walking minutes and zero-point shame tiers.
-FF.generalAchievements = {
-    { id = "firstfit", name = "Quest Accepted: Leg Day", kind = "total", target = 1, points = 1,
-      description = "Complete your first Forever Fit session.", icon = "Interface\\Icons\\Achievement_Quests_Completed_01" },
-    { id = "fit100", name = "The Barrens Grind Is Real", kind = "total", target = 100, points = 1,
-      description = "Complete 100 workouts.", icon = "Interface\\Icons\\Achievement_Quests_Completed_06" },
-    { id = "fit1000", name = "No Rest XP", kind = "total", target = 1000, points = 1,
-      description = "Complete 1,000 workouts.", icon = "Interface\\Icons\\Spell_Holy_Renew" },
-    { id = "walk60", name = "Goldshire Is That Way", kind = "walking", target = 60, points = 1,
-      description = "Complete 60 prescribed minutes of walking-pad sessions.", icon = "Interface\\Icons\\Ability_Hunter_Pathfinding" },
-    { id = "walk600", name = "Walked the Barrens", kind = "walking", target = 600, points = 1,
-      description = "Complete 600 prescribed minutes of walking-pad sessions.", icon = "Interface\\Icons\\INV_Boots_05" },
-    { id = "walk6000", name = "The Long Walk to Silithus", kind = "walking", target = 6000, points = 1,
-      description = "Complete 6,000 prescribed minutes of walking-pad sessions.", icon = "Interface\\Icons\\Ability_Rogue_Sprint" },
-    { id = "skip5", name = "AFK in Orgrimmar", kind = "skipped", target = 5, points = 0,
-      description = "Skip 5 workouts. The innkeeper is impressed.", icon = "Interface\\Icons\\INV_Misc_PocketWatch_01" },
-    { id = "skip50", name = "Professional Stormwind Benchwarmer", kind = "skipped", target = 50, points = 0,
-      description = "Skip 50 workouts. You have mastered the art of sitting.", icon = "Interface\\Icons\\INV_Misc_PocketWatch_02" },
-    { id = "skip500", name = "Illidan Was Not Prepared for Leg Day", kind = "skipped", target = 500, points = 0,
-      description = "Skip 500 workouts. A truly questionable feat of strength.", icon = "Interface\\Icons\\Ability_Rogue_FeignDeath" },
-    { id = "inventor", name = "Gnomeregan Patent Pending", kind = "inventor", target = 1, points = 1, hidden = true,
-      description = "Invent your first custom workout. The patent office has some questions.",
-      icon = "Interface\\Icons\\INV_Gizmo_02" },
-    { id = "cheater11", name = "The Forever Fit Cheater", kind = "cheater", target = 1, points = 0, hidden = true,
-      description = "Even the Bronze Dragonflight doubts your rep speed!",
-      icon = "Interface\\Icons\\Ability_Rogue_Sprint" },
-}
-
--- Progression challenges count distinct exercise achievements within each track.
--- Any four bodyweight or free-weight exercises, or any two walking-pad exercises,
--- can satisfy a tier; the enabled-checkbox settings never alter achievement rules.
-local milestoneTracks = {
-    { group = "No Equipment", target = 4, icon = "Interface\\Icons\\Ability_Warrior_Charge" },
-    { group = "Free Weights", target = 4, icon = "Interface\\Icons\\Ability_Warrior_StrengthOfArms" },
-    { group = "Walking Pad", target = 2, icon = "Interface\\Icons\\Ability_Hunter_Pathfinding" },
-}
-FF.milestoneAchievements = {}
-local otherNames = {
-    "Goblin-Made Training Wheels", "Ogre-Approved Gym Routine",
-    "Gnomeregan's Unlicensed Gym", "Bilgewater's Questionable Masterpiece",
-}
-for rank, entry in ipairs({
-    { group = "Beginner", required = 1, names = {
-        "Beginner Body Fitness", "Initiate Lifter", "The Road to Goldshire" } },
-    { group = "Intermediate", required = 10, names = {
-        "Stormwind Training Veteran", "Ironforge Iron-Pumper", "The Long Road Through Westfall" } },
-    { group = "Expert", required = 50, names = {
-        "Champion of the Argent Gym", "Swole of the Titans", "The Wanderer of Azeroth" } },
-    { group = "Godly", required = 250, names = {
-        "Might of the Titans", "Forged in Blackrock Mountain", "Walking with the Old Gods" } },
-}) do
-    FF.milestoneAchievements[#FF.milestoneAchievements + 1] = {
-        id = "other:" .. rank, name = otherNames[rank], group = entry.group,
-        kind = "other", target = entry.required, points = 1,
-        icon = "Interface\\Icons\\INV_Misc_Note_01",
-        description = "Complete " .. entry.required .. " custom workouts in the Other category.",
-    }
-    for track, spec in ipairs(milestoneTracks) do
-        local exerciseIDs = {}
-        for _, exercise in ipairs(FF.exercises) do
-            if exercise.group == spec.group then
-                exerciseIDs[#exerciseIDs + 1] = exercise.id
-            end
-        end
-        FF.milestoneAchievements[#FF.milestoneAchievements + 1] = {
-            id = "milestone:" .. rank .. ":" .. track, name = entry.names[track],
-            group = entry.group, kind = "milestone", exerciseIDs = exerciseIDs,
-            rank = rank, required = entry.required, target = spec.target, points = 1,
-            icon = spec.icon,
-            description = string.format("Earn any %d of these %d exercise achievements.", spec.target, #exerciseIDs),
-        }
-    end
+-- Resolve Blizzard icon paths to client file IDs, with a visible fallback.
+-- Missing assets return temporary/nonpositive IDs on Forever.
+function FF:ResolveIcon(path)
+    if type(path) == "number" and path > 0 then return path end
+    local id = type(path) == "string" and GetFileIDFromPath(path) or nil
+    return (id and id > 0) and id or 134400 -- INV_Misc_QuestionMark
 end
 
-function FF:GetExerciseAchievement(exercise, index)
-    local tier = self.achievementTiers[index]
-    if exercise.custom then return nil end
-    return { id = exercise.id .. ":" .. index, name = self.achievementNames[exercise.id][index],
-        kind = "exercise", exerciseID = exercise.id, target = tier.target, points = 1,
-        icon = exercise.icon, description = "Complete " .. tier.target .. " " .. exercise.name .. " sessions.", index = index }
-end
-
-function FF:GetAchievementProgress(achievement)
-    if achievement.kind == "other" then
-        return self.accountStats.customOtherSessions or 0
-    elseif achievement.kind == "inventor" then
-        return self.accountStats.inventor and 1 or 0
-    elseif achievement.kind == "exercise" then
-        return self.accountStats.lifetime[achievement.exerciseID] or 0
-    elseif achievement.kind == "milestone" then
-        local completed = 0
-        for _, id in ipairs(achievement.exerciseIDs) do
-            local prerequisite = self:GetAchievementByID(id .. ":" .. achievement.rank)
-            if prerequisite and self:GetAchievementProgress(prerequisite) >= prerequisite.target then
-                completed = completed + 1
-            end
-        end
-        return completed
-    elseif achievement.kind == "cheater" then
-        return self.accountStats.cheater and 1 or 0
-    elseif achievement.kind == "skipped" then
-        local total = 0
-        for _, count in pairs(self.accountStats.skipsLifetime) do total = total + count end
-        return total
-    elseif achievement.kind == "walking" then
-        return self.accountStats.walkingMinutes or 0
+-- Present addon achievements through WoW's native clickable-link tooltip.
+-- The receiver cannot know another player's exact unlock date from guild text.
+function FF:ShowAchievementTooltip(id, sender)
+    local achievement = self:GetAchievementByID(id)
+    if not achievement then return end
+    local player = UnitName("player")
+    local character = sender and sender:match("^[^-]+") or player
+    local isOwn = character == player
+    local timestamp = isOwn and self.accountStats.achievementDates[id] or nil
+    ShowUIPanel(ItemRefTooltip)
+    if not ItemRefTooltip:IsShown() then
+        ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE")
     end
-    local total = 0
-    for _, count in pairs(self.accountStats.lifetime) do total = total + count end
-    return total
-end
-
-function FF:GetAchievementByID(id)
-    for _, achievement in ipairs(self.milestoneAchievements) do
-        if achievement.id == id then return achievement end
+    ItemRefTooltip:SetPadding(0, 0)
+    ItemRefTooltip:ClearLines()
+    ItemRefTooltip:AddLine(achievement.name, 1, 1, 1)
+    ItemRefTooltip:AddLine(" ")
+    if timestamp then
+        ItemRefTooltip:AddLine(string.format("Achievement earned by %s on %s",
+            character, date("%m/%d/%y", timestamp)), 0, 1, 0)
+    else
+        ItemRefTooltip:AddLine("Achievement earned by " .. character, 0, 1, 0)
+        ItemRefTooltip:AddLine("Earned date unavailable", 0.6, 0.6, 0.6)
     end
-    for _, achievement in ipairs(self.generalAchievements) do
-        if achievement.id == id then return achievement end
-    end
-    for _, exercise in ipairs(self.exercises) do
-        if not exercise.custom then for i = 1, #self.achievementTiers do
-            if id == exercise.id .. ":" .. i then
-                return self:GetExerciseAchievement(exercise, i)
-            end
-        end end
+    ItemRefTooltip:AddLine(" ")
+    ItemRefTooltip:AddLine(achievement.description, 1, 1, 1, true)
+    ItemRefTooltip:AddLine(" ")
+    ItemRefTooltip:AddLine(achievement.name, 0, 1, 0)
+    ItemRefTooltip:Show()
+    if ItemRefTooltipTextLeft1 and ItemRefTooltip.CloseButton and
+        ItemRefTooltipTextLeft1:GetRight() and ItemRefTooltip.CloseButton:GetLeft() and
+        ItemRefTooltipTextLeft1:GetRight() > ItemRefTooltip.CloseButton:GetLeft() then
+        ItemRefTooltip:SetPadding(16, 0)
     end
 end
 
@@ -183,77 +67,6 @@ function FF:RefreshFitnessPoints()
     frame.fitnessSummary.bar:SetValue(math.max(0, earned))
     frame.fitnessSummary.bar.Text:SetText(string.format("Fitness Points %d / %d", earned, possible))
     frame.fitnessSummary.shield.Points:SetText(earned)
-end
-
--- Award the faction-flavored inventor achievement once per account.
-function FF:AwardInventorAchievement()
-    local achievement = self:GetAchievementByID("inventor")
-    if not achievement or not self.accountStats.inventor or self.accountStats.cheater
-        or self.accountStats.achievementDates.inventor then return end
-    self.accountStats.achievementDates.inventor = time()
-    self:AnnounceAchievement(achievement)
-end
-
--- Award the secret achievement once, as soon as the cheater lock activates.
-function FF:AwardCheaterAchievement()
-    if not self.accountStats.cheater or self.accountStats.achievementDates.cheater11 then return end
-    self.accountStats.achievementDates.cheater11 = time()
-    self:AnnounceAchievement(self:GetAchievementByID("cheater11"))
-end
-
-function FF:CheckAchievementUnlocks(exercise, completed, cheatedNow)
-    if cheatedNow then
-        self:AwardCheaterAchievement()
-        return
-    end
-    -- Do not award any additional achievements after the cheater flag is set.
-    if self.accountStats.cheater then return end
-    local achievements = {}
-    if completed and not exercise.custom then
-        for i, tier in ipairs(self.achievementTiers) do
-            local after = self.accountStats.lifetime[exercise.id] or 0
-            if after == tier.target then
-                achievements[#achievements + 1] = self:GetExerciseAchievement(exercise, i)
-            end
-        end
-    end
-    for _, achievement in ipairs(self.generalAchievements) do
-        local delta = 0
-        if completed and achievement.kind == "total" then
-            delta = 1
-        elseif completed and achievement.kind == "walking" then
-            delta = exercise.durationMinutes or 0
-        elseif not completed and achievement.kind == "skipped" then
-            delta = 1
-        end
-        local current = self:GetAchievementProgress(achievement)
-        if delta > 0 and current >= achievement.target and current - delta < achievement.target then
-            achievements[#achievements + 1] = achievement
-        end
-    end
-    if completed then
-        for _, achievement in ipairs(self.milestoneAchievements) do
-            if achievement.kind == "other" and exercise.custom and exercise.group == "Other"
-                and self:GetAchievementProgress(achievement) == achievement.target
-                and not self.accountStats.achievementDates[achievement.id] then
-                achievements[#achievements + 1] = achievement
-            end
-            for _, id in ipairs(achievement.exerciseIDs or {}) do
-                if id == exercise.id and (self.accountStats.lifetime[id] or 0) == achievement.required
-                    and self:GetAchievementProgress(achievement) == achievement.target
-                    and not self.accountStats.achievementDates[achievement.id] then
-                    achievements[#achievements + 1] = achievement
-                    break
-                end
-            end
-        end
-    end
-    for _, achievement in ipairs(achievements) do
-        if not self.accountStats.achievementDates[achievement.id] then
-            self.accountStats.achievementDates[achievement.id] = time()
-            self:AnnounceAchievement(achievement)
-        end
-    end
 end
 
 local groups = { "General", "Beginner", "Intermediate", "Expert", "Godly", "No Equipment", "Free Weights", "Walking Pad", "Other" }
@@ -869,15 +682,5 @@ function FF:StartLegacyButtonWatcher()
     if self:TryAttachLegacyButton() then return end
     if not self.legacyWatcher then
         self.legacyWatcher = C_Timer.NewTicker(2, function() FF:TryAttachLegacyButton() end)
-    end
-end
-
-function FF:RefreshInventorName()
-    for _, achievement in ipairs(self.generalAchievements) do
-        if achievement.id == "inventor" then
-            achievement.name = UnitFactionGroup("player") == "Horde"
-                and "Bilgewater Patent Pending" or "Gnomeregan Patent Pending"
-            return
-        end
     end
 end

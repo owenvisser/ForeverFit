@@ -1,67 +1,39 @@
 local _, FF = ...
 
--- Default Exercises page spacing, independent of other pages.
-local DESCRIPTION_SKIP = 25
-local EXERCISE_ROW_SKIP = 30
-local SMALL_TEXT_SKIP = 10
-local TITLE_SKIP = 20
-local INTRO_SKIP = 35
-local FIELD_SKIP = 15
-local NORMAL_SKIP = 25
-
+-- Page-specific controls use the same widgets and spacing definitions as the other settings pages.
+local UI = FF.OptionsWidgets
+local COMMON = FF.OptionsTheme.COMMON
+local P = FF.OptionsTheme.DEFAULT
 local groups = {
     { name = "No Equipment", description = "Bodyweight movement and strength; no gear required." },
     { name = "Free Weights", description = "Short dumbbell-based strength sessions." },
     { name = "Walking Pad", description = "Five-minute walks; incline workouts require incline support." },
 }
 
-local function Label(parent, text, font, x, y)
-    local label = parent:CreateFontString(nil, "ARTWORK", font or "GameFontNormal")
-    label:SetPoint("TOPLEFT", x, y)
-    label:SetText(text)
-    return label
-end
-
+-- Builds category and built-in exercise controls using the shared settings widgets.
+-- Input: FF.baseExercises and shared parameters. Output: the Default Exercises page.
 function FF:BuildDefaultOptions()
-    local panel = CreateFrame("Frame", "ForeverFitDefaultExercisesPanel")
-    panel.name = "Default Exercises"
-    panel.OnCommit = function() end
-    panel.OnDefault = function() end
-    panel.OnRefresh = function() FF:RefreshDefaultOptions() end
-    panel:SetScript("OnShow", function()
-        FF:SetSettingsOpen(true)
-        FF:RefreshDefaultOptions()
-    end)
-    panel:SetScript("OnHide", function() FF:SetSettingsOpen(false) end)
-    local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scroll:SetPoint("TOPLEFT", 6, -6)
-    scroll:SetPoint("BOTTOMRIGHT", -30, 6)
-    local content = CreateFrame("Frame", nil, scroll)
-    content:SetSize(555, 750)
-    scroll:SetScrollChild(content)
+    local panel = UI.Page("ForeverFitDefaultExercisesPanel", "Default Exercises",
+        function() FF:RefreshDefaultOptions() end)
+    local scroll, content = UI.ScrollContent(panel, P.CONTENT_HEIGHT)
 
-    local y = -16
-    Label(content, "Default Exercises", "GameFontNormalHuge", 20, y)
-    y = y - TITLE_SKIP
-    Label(content, "Enable a category or individual exercise for the normal workout rotation.",
-        "GameFontHighlightSmall", 20, y)
+    local y = COMMON.INITIAL_Y
+    UI.Label(content, "Default Exercises", COMMON.TITLE_FONT, COMMON.LABEL_X, y)
+    y = y - COMMON.TITLE_SKIP
+    UI.Label(content, "Enable a category or individual exercise for the normal workout rotation.",
+        COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
     local groupChecks, exerciseChecks = {}, {}
-    y = y - INTRO_SKIP
+    y = y - COMMON.INTRO_SKIP
     for _, group in ipairs(groups) do
-        local checkbox = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-        checkbox:SetPoint("TOPLEFT", 18, y)
-        checkbox.Text:SetText(group.name)
-        checkbox.Text:SetFontObject("GameFontNormal")
-        -- checkbox.Text:SetTextColor(0.95, 0.76, 0.40)
-        checkbox:SetScript("OnClick", function(self)
+        local checkbox = UI.Checkbox(content, group.name, COMMON.CHECKBOX_X, y, function(self)
             FF.db.enabledGroups[group.name] = self:GetChecked() == true
             FF:OnExerciseSelectionChanged()
             FF:RefreshDefaultOptions()
         end)
         groupChecks[group.name] = checkbox
         local help = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
-        help:SetSize(22, 21)
-        help:SetPoint("TOPLEFT", 140, y - 4)
+        help:SetSize(P.CATEGORY_HELP_WIDTH, P.CATEGORY_HELP_HEIGHT)
+        help:SetPoint("TOPLEFT", P.CATEGORY_HELP_X, y + P.CATEGORY_HELP_Y_OFFSET)
         help:SetText("?")
         help:SetScript("OnEnter", function(button)
             GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
@@ -70,32 +42,28 @@ function FF:BuildDefaultOptions()
             GameTooltip:Show()
         end)
         help:SetScript("OnLeave", function() GameTooltip:Hide() end)
-        y = y - DESCRIPTION_SKIP - 5
-        Label(content, group.description, "GameFontHighlightSmall", 52, y)
+        y = y - P.DESCRIPTION_SKIP - P.CATEGORY_DESCRIPTION_EXTRA_GAP
+        UI.Label(content, group.description, COMMON.SUBTITLE_FONT, P.CATEGORY_DESCRIPTION_X, y)
         local matching = {}
         for _, exercise in ipairs(self.baseExercises) do
             if exercise.group == group.name then matching[#matching + 1] = exercise end
         end
-        y = y - TITLE_SKIP
+        y = y - COMMON.TITLE_SKIP
         local rows = math.ceil(#matching / 2)
         for i, exercise in ipairs(matching) do
             local col = math.floor((i - 1) / rows)
             local row = (i - 1) % rows
-            local x = 20 + col * 264
-            local rowY = y - row * EXERCISE_ROW_SKIP
-            local item = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-            item:SetPoint("TOPLEFT", x, rowY)
-            item.Text:SetText(exercise.name)
-            item.Text:SetWidth(191)
-            item.Text:SetJustifyH("LEFT")
-            item:SetScript("OnClick", function(self)
+            local x = P.COLUMN_LEFT_X + col * P.COLUMN_DISTANCE
+            local rowY = y - row * P.EXERCISE_ROW_SKIP
+            local item = UI.Checkbox(content, exercise.name, x, rowY, function(self)
                 FF.db.enabled[exercise.id] = self:GetChecked() == true
                 FF:OnExerciseSelectionChanged()
-            end)
+            end, P.EXERCISE_TEXT_WIDTH, "LEFT")
             exerciseChecks[exercise.id] = item
             local exerciseHelp = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
-            exerciseHelp:SetSize(23, 22)
-            exerciseHelp:SetPoint("TOPLEFT", x + 220, rowY - 5)
+            exerciseHelp:SetSize(P.EXERCISE_HELP_WIDTH, P.EXERCISE_HELP_HEIGHT)
+            exerciseHelp:SetPoint("TOPLEFT", x + P.EXERCISE_HELP_X_OFFSET,
+                rowY + P.EXERCISE_HELP_Y_OFFSET)
             exerciseHelp:SetText("?")
             exerciseHelp:SetScript("OnEnter", function(button)
                 GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
@@ -106,29 +74,28 @@ function FF:BuildDefaultOptions()
             end)
             exerciseHelp:SetScript("OnLeave", function() GameTooltip:Hide() end)
         end
-        y = y - rows * EXERCISE_ROW_SKIP - NORMAL_SKIP
+        y = y - rows * P.EXERCISE_ROW_SKIP - P.NORMAL_SKIP
     end
 
-    Label(content, "Other", "GameFontNormalLarge", 20, y)
-    y = y - TITLE_SKIP
-    Label(content, "Controls custom workouts assigned to Other; custom entries are edited on Custom Exercises.",
-        "GameFontHighlightSmall", 20, y)
-    y = y - FIELD_SKIP
-    local other = CreateFrame("CheckButton", nil, content, "UICheckButtonTemplate")
-    other:SetPoint("TOPLEFT", 18, y)
-    other.Text:SetText("Enable Other Category")
-    other:SetScript("OnClick", function(self)
+    UI.Label(content, "Other", COMMON.SECTION_FONT, COMMON.LABEL_X, y)
+    y = y - COMMON.TITLE_SKIP
+    UI.Label(content, "Controls custom workouts assigned to Other; custom entries are edited on Custom Exercises.",
+        COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
+    y = y - COMMON.FIELD_SKIP
+    local other = UI.Checkbox(content, "Enable Other Category", COMMON.CHECKBOX_X, y, function(self)
         FF.db.enabledGroups.Other = self:GetChecked() == true
         FF:OnExerciseSelectionChanged()
         FF:RefreshCustomOptions()
     end)
     
-    content:SetHeight(-y + 70)
+    content:SetHeight(-y + P.CONTENT_BOTTOM_PADDING)
 
     self.defaultOptions = { groupChecks = groupChecks, exerciseChecks = exerciseChecks, other = other }
     self.defaultCategory = Settings.RegisterCanvasLayoutSubcategory(self.category, panel, "Default Exercises")
 end
 
+-- Synchronizes category and exercise checkboxes from saved enabled states.
+-- Input: FF.db.enabledGroups and FF.db.enabled. Output: refreshed page controls.
 function FF:RefreshDefaultOptions()
     if not self.defaultOptions or not self.db then return end
     local opts = self.defaultOptions
