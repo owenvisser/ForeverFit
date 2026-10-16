@@ -34,8 +34,6 @@ function FF:BuildInfoOptions()
         P.TEXT_WIDTH, "LEFT")
     y = y - math.max(inclusive:GetStringHeight(), P.ENCOURAGEMENT_MIN_HEIGHT) - P.BIG_LINE_SKIP
 
-    UI.Label(content, "Changelog", COMMON.SECTION_FONT, COMMON.LABEL_X, y, P.TEXT_WIDTH, "LEFT")
-    y = y - P.SHORT_LINE_SKIP
     content:SetHeight(-y + P.CONTENT_BOTTOM_PADDING)
     self.infoCategory = Settings.RegisterCanvasLayoutSubcategory(self.category, panel, "Info")
 end
