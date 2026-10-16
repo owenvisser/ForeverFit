@@ -1,5 +1,20 @@
 local _, FF = ...
 
+-- Counts actual Walking Pad sessions in saved completion totals, including retired custom exercises.
+-- Input: a lifetime table keyed by exercise ID. Output: number of completed Walking Pad sessions.
+function FF:CountWalkingPadSessions(completionCounts)
+    local walkingIDs = {}
+    for _, exercise in ipairs(self.baseExercises) do
+        if exercise.group == "Walking Pad" then walkingIDs[exercise.id] = true end
+    end
+    for _, exercise in ipairs(self.db.customExercises) do
+        if exercise.group == "Walking Pad" then walkingIDs[exercise.id] = true end
+    end
+    local total = 0
+    for id in pairs(walkingIDs) do total = total + (completionCounts[id] or 0) end
+    return total
+end
+
 -- Detect eleven completed workouts within any rolling 60-second window.
 -- Wall-clock timestamps persist across reloads, unlike GetTime().
 function FF:CheckCompletionRate()
@@ -33,8 +48,13 @@ function FF:RecordCompletion(exercise)
     lifetime[id] = (lifetime[id] or 0) + 1
     self.accountStats.lifetime[id] = (self.accountStats.lifetime[id] or 0) + 1
     perLevel[level][id] = (perLevel[level][id] or 0) + 1
-    self.stats.walkingMinutes = self.stats.walkingMinutes + (exercise.durationMinutes or 0)
-    self.accountStats.walkingMinutes = self.accountStats.walkingMinutes + (exercise.durationMinutes or 0)
+    if exercise.group == "Walking Pad" then
+        self.stats.walkingMinutes = self.stats.walkingMinutes + 1
+        self.accountStats.walkingMinutes = self.accountStats.walkingMinutes + 1
+    end
+    if exercise.custom then
+        self.stats.exerciseHistory[exercise.id] = { name = exercise.name, group = exercise.group }
+    end
     if exercise.custom and exercise.group == "Other" then
         self.stats.customOtherSessions = self.stats.customOtherSessions + 1
         self.accountStats.customOtherSessions = self.accountStats.customOtherSessions + 1
@@ -56,57 +76,53 @@ function FF:RecordSkip(exercise)
     lifetime[id] = (lifetime[id] or 0) + 1
     self.accountStats.skipsLifetime[id] = (self.accountStats.skipsLifetime[id] or 0) + 1
     perLevel[level][id] = (perLevel[level][id] or 0) + 1
+    if exercise.custom then
+        self.stats.exerciseHistory[exercise.id] = { name = exercise.name, group = exercise.group }
+    end
     self:CheckAchievementUnlocks(exercise, false)
     if self.achievementsFrame and self.achievementsFrame:IsShown() then
         self:RefreshAchievements()
     end
 end
 
+-- Clears all account achievement/workout totals and this character's statistics.
+-- Input: current account and character SavedVariables. Output: empty account progress;
+-- characters not currently logged in are invalidated by resetGeneration on next login.
 function FF:ResetStatistics()
-    -- Reset only this character's contribution, retaining other characters' progress.
-    local account = self.accountStats
-    for id, count in pairs(self.stats.lifetime) do
-        account.lifetime[id] = math.max(0, (account.lifetime[id] or 0) - count)
-    end
-    for id, count in pairs(self.stats.skipsLifetime) do
-        account.skipsLifetime[id] = math.max(0, (account.skipsLifetime[id] or 0) - count)
-    end
-    account.walkingMinutes = math.max(0, account.walkingMinutes - self.stats.walkingMinutes)
-    account.customOtherSessions = math.max(0, account.customOtherSessions - self.stats.customOtherSessions)
+    local account, stats = self.accountStats, self.stats
+    account.resetGeneration = (tonumber(account.resetGeneration) or 0) + 1
+    account.lifetime = {}
+    account.skipsLifetime = {}
+    account.achievementDates = {}
+    account.walkingMinutes = 0
+    account.customOtherSessions = 0
+    account.inventor = false
     account.cheater = false
-    account.achievementDates.cheater11 = nil
-    self.stats.lifetime = {}
-    self.stats.levels = {}
-    self.stats.skipsLifetime = {}
-    self.stats.skipsLevels = {}
-    self.stats.achievementDates = {}
-    self.stats.completionTimes = {}
-    self.stats.cheater = false
-    self.stats.inventor = false
-    self.stats.customOtherSessions = 0
-    self.stats.walkingMinutes = 0
-    self.stats.lastAnnouncedLevel = nil
-    -- Drop dates for achievements no longer earned; keep other characters' dates.
-    for _, group in ipairs({ self.generalAchievements, self.milestoneAchievements }) do
-        for _, achievement in ipairs(group) do
-            if self:GetAchievementProgress(achievement) < achievement.target then
-                account.achievementDates[achievement.id] = nil
-            end
-        end
-    end
-    for _, exercise in ipairs(self.baseExercises) do
-        for i = 1, #self.achievementTiers do
-            local achievement = self:GetExerciseAchievement(exercise, i)
-            if self:GetAchievementProgress(achievement) < achievement.target then
-                account.achievementDates[achievement.id] = nil
-            end
-        end
-    end
+    -- Preserve migratedCharacters: it is bookkeeping, not progress. Old saves are
+    -- invalidated by resetGeneration before they can be migrated on future logins.
+    stats.resetGeneration = account.resetGeneration
+    stats.lifetime = {}
+    stats.levels = {}
+    stats.skipsLifetime = {}
+    stats.skipsLevels = {}
+    stats.achievementDates = {}
+    stats.completionTimes = {}
+    stats.exerciseHistory = {}
+    stats.cheater = false
+    stats.inventor = false
+    stats.customOtherSessions = 0
+    stats.walkingMinutes = 0
+    stats.lastAnnouncedLevel = nil
+    self.achievementAlertQueue = {}
+    if self.achievementAlertFrame then self.achievementAlertFrame:Hide() end
+    self.state.pending = false
     self:UpdateTaxiWatcher()
-    if not self.state.settingsOpen then self:StartTimer() end
+    if not self.state.settingsOpen and not self.state.currentExercise then self:StartTimer() end
     if self.achievementsFrame and self.achievementsFrame:IsShown() then
         self:RefreshAchievements()
     end
+    if self.RefreshStatisticsTab then self:RefreshStatisticsTab() end
+    if self.RefreshOptions then self:RefreshOptions() end
 end
 
 -- Confirmed apology restores reminders without altering workout statistics.

@@ -101,7 +101,8 @@ local function BuildCard(card)
     card.ribbon:SetPoint("TOPRIGHT", -80, -4)
     card.icon = CreateFrame("Frame", nil, card, "LegacyChallengeIconFrameTemplate")
     card.icon:SetPoint("TOPLEFT", 12, -18)
-    card.name = Text(card, "GameFontHighlightLarge", "TOPLEFT", "TOPLEFT", 82, -21)
+    -- Native Label anchor: TitleBar TOPLEFT (5, -4) plus (70, -18).
+    card.name = Text(card, "GameFontHighlightLarge", "TOPLEFT", "TOPLEFT", 75, -22)
     card.plusMinus = card:CreateTexture(nil, "OVERLAY")
     card.plusMinus:SetSize(20, 20)
     card.plusMinus:SetPoint("TOPLEFT", 76, -49)
@@ -109,19 +110,32 @@ local function BuildCard(card)
     card.description:SetPoint("TOPLEFT", card.ribbon, "BOTTOMLEFT", 95, -2)
     card.description:SetWidth(400)
     card.description:SetJustifyH("LEFT")
-    card.shield = card:CreateTexture(nil, "OVERLAY")
-    card.shield:SetAtlas("Legacy-Tree-Frame-Points-Icon", true)
-    card.shield:SetScale(0.7)
-    card.shield:SetPoint("TOPRIGHT", -14, -24)
-    card.badgeNumber = card:CreateFontString(nil, "OVERLAY", "GameFontNormalMed3")
-    card.badgeNumber:SetPoint("CENTER", card.shield, "CENTER", 0, -4)
-    card.check = card:CreateTexture(nil, "OVERLAY")
+    card.description:SetJustifyV("TOP")
+    -- Mirror LegacyChallengeTemplate.Shield from Blizzard_LegacySystemTemplates.xml.
+    -- The 64x64 child frame preserves Blizzard's texture layers and relative anchors.
+    card.shield = CreateFrame("Frame", nil, card)
+    card.shield:SetSize(64, 64)
+    card.shield:SetPoint("TOPRIGHT", card, "TOPRIGHT", -6, -2)
+
+    card.shield.Icon = card.shield:CreateTexture(nil, "BACKGROUND")
+    card.shield.Icon:SetAtlas("UI-Legacy-Points-icon-c60", true)
+    card.shield.Icon:SetScale(0.7)
+    card.shield.Icon:SetPoint("TOPRIGHT", card.shield, "TOPRIGHT", -11.875, -34)
+
+    card.badgeNumber = card.shield:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    card.badgeNumber:SetJustifyH("CENTER")
+    card.badgeNumber:SetPoint("CENTER", card.shield.Icon, "CENTER", -1, -4)
+    
+    card.checkBackground = card.shield:CreateTexture(nil, "OVERLAY")
+    card.checkBackground:SetAtlas("Legacy-Challenge-Cards-Date-BG", true)
+    card.checkBackground:SetPoint("TOPRIGHT", card.shield, "TOPRIGHT", 0, -1)
+    card.check = card.shield:CreateTexture(nil, "OVERLAY")
     card.check:SetAtlas("worldquest-tracker-checkmark", true)
     card.check:SetScale(0.5)
-    card.check:SetPoint("TOPRIGHT", -4, -4)
-    card.earnedDate = card:CreateFontString(nil, "OVERLAY", "GameFontNormalMed3")
-    card.earnedDate:SetPoint("TOPRIGHT", card.check, "TOPLEFT", -4, -1)
-    card.earnedDate:SetTextColor(1, 0.82, 0)
+    card.check:SetPoint("TOPRIGHT", card.shield, "TOPRIGHT", -4, -4)
+    card.earnedDate = card.shield:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    card.earnedDate:SetPoint("RIGHT", card.check, "LEFT", 0, 0)
+    card.earnedDate:Hide()
     -- Native counted-criteria row, shown only when the card is expanded.
     card.criteria = CreateFrame("Frame", nil, card, "LegacyChallengeCriteriaTemplate")
     card.criteria:SetPoint("BOTTOMLEFT", 20, 6)
@@ -415,18 +429,29 @@ function FF:ConfigureAchievementCard(card, achievement, i)
     card.selected:SetShown(expanded)
     card.ribbon:SetAtlas(reached and "Legacy-Challenge-Cards-Ribbon-Brown" or "Legacy-Challenge-Cards-Ribbon-Brown-Disable", true)
     card.icon.texture:SetTexture(self:ResolveIcon(achievement.icon))
-    card.icon.texture:SetDesaturated(not reached)
+    card.icon.texture:SetDesaturated(not reached and not expanded)
     card.name:SetText(achievement.name)
     local textColor = (reached or expanded) and WHITE_FONT_COLOR or GRAY_FONT_COLOR
     card.name:SetTextColor(textColor:GetRGBA())
     card.plusMinus:SetAtlas(expanded and "128-redbutton-minus" or "128-redbutton-plus")
     card.description:SetText(achievement.description)
     card.description:SetTextColor(textColor:GetRGBA())
-    card.shield:SetDesaturated(not reached)
-    card.badgeNumber:SetText(achievement.points)
+    -- Blizzard's Legacy shield uses the same point artwork for every progress state.
+    -- Display -999 points for The Forever Fit Cheater.
+    local badgePoints = achievement.points
+    if achievement.kind == "cheater" and self.accountStats.cheater then
+        badgePoints = -999
+    end
+
+    card.shield.Icon:SetShown(badgePoints ~= 0)
+    card.badgeNumber:SetText(badgePoints)
+    card.badgeNumber:SetFontObject(badgePoints == -999 and GameFontNormalSmall or GameFontNormalLarge)
     card.check:SetShown(reached)
+    card.checkBackground:SetShown(reached)
     local timestamp = reached and self.accountStats.achievementDates[achievement.id]
     card.earnedDate:SetText(timestamp and date("%m/%d/%y", timestamp) or "")
+    card.earnedDate:SetWidth(card.earnedDate:GetStringWidth() + 5)
+    card.earnedDate:SetShown(reached)
     local isMilestone = achievement.kind == "milestone"
     card.criteria:SetShown(expanded and not isMilestone)
     card.objectivesFrame:SetShown(expanded and isMilestone)
@@ -454,6 +479,7 @@ function FF:RefreshAchievements()
     local frame = self.achievementsFrame
     if not frame or not self.stats then return end
     local provider = CreateDataProvider()
+    frame.selectedAchievementElement = nil
     if frame.selectedGroup == "General" then
         local index = 0
         for _, achievement in ipairs(self.generalAchievements) do
@@ -461,7 +487,9 @@ function FF:RefreshAchievements()
                 index = index + 1
                 local reached = self:GetAchievementProgress(achievement) >= achievement.target
                 if frame.tierFilter == "all" or reached == (frame.tierFilter == "completed") then
-                    provider:Insert({ index = index, achievement = achievement })
+                    local element = { index = index, achievement = achievement }
+                    provider:Insert(element)
+                    if index == frame.selectedTier then frame.selectedAchievementElement = element end
                 end
             end
         end
@@ -472,7 +500,9 @@ function FF:RefreshAchievements()
                 index = index + 1
                 local reached = self:GetAchievementProgress(achievement) >= achievement.target
                 if frame.tierFilter == "all" or reached == (frame.tierFilter == "completed") then
-                    provider:Insert({ index = index, achievement = achievement })
+                    local element = { index = index, achievement = achievement }
+                    provider:Insert(element)
+                    if index == frame.selectedTier then frame.selectedAchievementElement = element end
                 end
             end
         end
@@ -480,7 +510,9 @@ function FF:RefreshAchievements()
         local count = self.accountStats.lifetime[frame.selectedExercise.id] or 0
         for i, tier in ipairs(self.achievementTiers) do
             if frame.tierFilter == "all" or (count >= tier.target) == (frame.tierFilter == "completed") then
-                provider:Insert({ index = i, achievement = self:GetExerciseAchievement(frame.selectedExercise, i) })
+                local element = { index = i, achievement = self:GetExerciseAchievement(frame.selectedExercise, i) }
+                provider:Insert(element)
+                if i == frame.selectedTier then frame.selectedAchievementElement = element end
             end
         end
     end
@@ -546,6 +578,8 @@ function FF:ShowAchievements()
     end
     local page = self.legacyHost.ChallengesPage
     if self.pendingAchievement then
+        -- A completed-tier-only filter could otherwise hide the selected card.
+        frame.tierFilter = "all"
         frame.selectedExercise = self.pendingAchievement.exercise
         frame.selectedMilestone = nil
         frame.selectedGroup = self.pendingAchievement.general and "General"
@@ -588,6 +622,16 @@ function FF:ShowAchievements()
     self:RefreshAchievements()
     frame:Show()
     frame.fitnessSummary:Show()
+    -- Scroll to the exact selected card using the native ScrollBox element API.
+    -- Defer one frame so the new provider has finished laying out its rows.
+    local selectedElement = frame.selectedAchievementElement
+    if selectedElement and frame.detail.ScrollToElementData then
+        C_Timer.After(0, function()
+            if frame:IsShown() and frame.selectedAchievementElement == selectedElement then
+                frame.detail:ScrollToElementData(selectedElement)
+            end
+        end)
+    end
     self.legacyButton:SetChecked(true)
     self.openAchievementsWhenReady = false
     return true

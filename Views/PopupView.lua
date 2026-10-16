@@ -1,6 +1,6 @@
 local _, FF = ...
 
-local DEFAULT_WIDTH, DEFAULT_HEIGHT = 392, 300
+local DEFAULT_WIDTH, DEFAULT_HEIGHT = 400, 250
 local MIN_WIDTH, MIN_HEIGHT = 350, 200
 local MAX_WIDTH, MAX_HEIGHT = 650, 480
 
@@ -180,7 +180,6 @@ function FF:ShowPopupPreview()
     local exercise = self.baseExercises[1]
     popup.icon:SetTexture(self:ResolveIcon(exercise.icon))
     popup.exerciseName:SetText(exercise.name)
-    popup.target:SetText("Goal: " .. exercise.target)
     popup.instructions:SetText(exercise.instructions)
     popup.quip:SetText('"Preview only — no workout is recorded."')
     self:ApplyPopupLayout()
@@ -191,7 +190,6 @@ function FF:ShowExercisePopup(exercise)
     local popup = self.popup
     popup.icon:SetTexture(self:ResolveIcon(exercise.icon))
     popup.exerciseName:SetText(exercise.name)
-    popup.target:SetText("Goal: " .. exercise.target)
     popup.instructions:SetText(exercise.instructions)
     popup.quip:SetText('"' .. exercise.quip .. '"')
     popup:Show()

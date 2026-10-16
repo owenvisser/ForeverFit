@@ -25,12 +25,17 @@ for rank, entry in ipairs(FF.milestoneRanks) do
     end
 end
 
+-- Builds an exercise achievement using its tier-specific icon when available.
 function FF:GetExerciseAchievement(exercise, index)
     local tier = self.achievementTiers[index]
     if exercise.custom then return nil end
+
+    local tierIcons = self.achievementIcons[exercise.id]
+    local achievementIcon = tierIcons and tierIcons[index] or exercise.icon
+
     return { id = exercise.id .. ":" .. index, name = self.achievementNames[exercise.id][index],
         kind = "exercise", exerciseID = exercise.id, target = tier.target, points = 1,
-        icon = exercise.icon, description = "Complete " .. tier.target .. " " .. exercise.name .. " sessions.", index = index }
+        icon = achievementIcon, description = "Complete " .. tier.target .. " " .. exercise.name .. " sessions.", index = index }
 end
 
 function FF:GetAchievementProgress(achievement)

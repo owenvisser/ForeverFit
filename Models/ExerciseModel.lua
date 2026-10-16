@@ -28,13 +28,12 @@ local function CleanCustomText(value, maxLength)
     return value:sub(1, maxLength)
 end
 
-function FF:SaveCustomExercise(id, name, description, target, group)
+function FF:SaveCustomExercise(id, name, description, group)
     name = CleanCustomText(name, 44)
     description = CleanCustomText(description, 180)
-    target = CleanCustomText(target, 40)
     local valid = { ["No Equipment"] = true, ["Free Weights"] = true, ["Walking Pad"] = true, Other = true }
-    if name == "" or description == "" or target == "" or not valid[group] then
-        return nil, "Enter a name, description, target/rep range, and category."
+    if name == "" or description == "" or not valid[group] then
+        return nil, "Enter a name, description, and category."
     end
     local exercise
     if id then
@@ -54,7 +53,7 @@ function FF:SaveCustomExercise(id, name, description, target, group)
         self.db.enabled[exercise.id] = true
         self.db.cycleCounts[exercise.id] = 0
     end
-    exercise.name, exercise.instructions, exercise.target, exercise.group = name, description, target, group
+    exercise.name, exercise.instructions, exercise.group = name, description, group
     exercise.icon = "Interface\\Icons\\INV_Misc_Note_01"
     exercise.quip = "A custom quest from the finest trainers of Azeroth!"
     self:ReloadExerciseCatalog()

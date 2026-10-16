@@ -40,13 +40,13 @@ function FF:AnnouncePartyExercise(exercise)
     if self.db.partyBreakAnnounce then
         C_ChatInfo.SendChatMessage(string.format(
             "[Forever Fit] BRB, heroes! %s got a real-life quest: %s (%s). Give me a moment to grind some Strength!",
-            player, exercise.name, exercise.target
+            player, exercise.name
         ), "PARTY")
     end
     if self.db.partyInviteAnnounce then
         C_ChatInfo.SendChatMessage(string.format(
             "[Forever Fit] Bonus party quest: join me for %s (%s)! Rewards: +1 IRL Stamina and bragging rights.",
-            exercise.name, exercise.target
+            exercise.name
         ), "PARTY")
     end
     return true

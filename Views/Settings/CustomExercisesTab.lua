@@ -40,11 +40,6 @@ function FF:BuildCustomOptions()
     description:SetTextInsets(P.DESCRIPTION_INSET_LEFT, P.DESCRIPTION_INSET_RIGHT,
         P.DESCRIPTION_INSET_TOP, P.DESCRIPTION_INSET_BOTTOM)
     y = y - P.BIG_LINE_SKIP
-    UI.Label(content, "Rep Range / Workout Target", COMMON.LABEL_FONT, COMMON.LABEL_X, y)
-    y = y - COMMON.FIELD_SKIP
-    local target = UI.Field(content, P.FORM_X, y, P.TARGET_FIELD_WIDTH,
-        COMMON.TEXT_FIELD_HEIGHT, P.TARGET_FIELD_MAX_LETTERS)
-    y = y - P.BIG_LINE_SKIP
     UI.Label(content, "Exercise Category", COMMON.LABEL_FONT, COMMON.LABEL_X, y)
     y = y - COMMON.FIELD_SKIP
     local group = "No Equipment"
@@ -53,6 +48,7 @@ function FF:BuildCustomOptions()
     UIDropDownMenu_SetWidth(dropdown, P.DROPDOWN_WIDTH)
     -- Changes the draft exercise category and updates its dropdown caption.
     -- Input: a built-in category name or Other.
+    y = y - COMMON.FIELD_SKIP
     local function SetGroup(value)
         group = value
         UIDropDownMenu_SetText(dropdown, value)
@@ -71,7 +67,7 @@ function FF:BuildCustomOptions()
     y = y - COMMON.FIELD_SKIP
     local status = UI.Label(content, "", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y,
         P.STATUS_WIDTH, "LEFT")
-    y = y - P.BIG_LINE_SKIP
+    y = y - COMMON.FIELD_SKIP
     local save = UI.Button(content, "Add Exercise", P.FORM_X, y, P.SAVE_BUTTON_WIDTH)
     local clear = CreateFrame("Button", nil, content, COMMON.BUTTON_TEMPLATE)
     clear:SetPoint("LEFT", save, "RIGHT", P.CLEAR_BUTTON_GAP, 0)
@@ -84,14 +80,13 @@ function FF:BuildCustomOptions()
         editingID = nil
         name:SetText("")
         description:SetText("")
-        target:SetText("")
         SetGroup("No Equipment")
         save:SetText("Add Exercise")
     end
     clear:SetScript("OnClick", function() ClearForm(); status:SetText("") end)
     save:SetScript("OnClick", function()
         local exercise, message = FF:SaveCustomExercise(editingID, name:GetText(),
-            description:GetText(), target:GetText(), group)
+            description:GetText(), group)
         if not exercise then status:SetText(message); return end
         ClearForm()
         status:SetText("Saved: " .. exercise.name .. ". Existing workout counts are preserved.")
@@ -158,7 +153,6 @@ function FF:BuildCustomOptions()
                 editingID = exercise.id
                 name:SetText(exercise.name)
                 description:SetText(exercise.instructions)
-                target:SetText(exercise.target)
                 SetGroup(exercise.group)
                 save:SetText("Save Changes")
                 scroll:SetVerticalScroll(0)

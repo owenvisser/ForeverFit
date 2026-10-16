@@ -137,35 +137,12 @@ function FF:BuildGeneralTab()
     resetLayoutButton:SetScript("OnClick", function() FF:ResetPopupLayout() end)
 
     y = y - COMMON.SECTION_SKIP
-    AddText(content, "Reset Workout Statistics", COMMON.SECTION_FONT, COMMON.LABEL_X, y)
+    local apologyStartY = y
+    local apologyTitle = AddText(content, "Cheater Apology", COMMON.SECTION_FONT, COMMON.LABEL_X, y)
     y = y - COMMON.TITLE_SKIP
-    AddText(content, "Resets this character; other characters keep their achievement progress.", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
+    local apologyDescription = AddText(content, "Removes only the Cheater lockout. All workout statistics remain.", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
     y = y - COMMON.FIELD_SKIP
-    AddText(content, "Type RESET to confirm:", "GameFontHighlight", COMMON.LABEL_X, y)
-    local resetButton = UI.Button(content, "Reset Statistics", P.RESET_STATS_BUTTON_X, y + P.RESET_STATS_BUTTON_Y_OFFSET, P.RESET_STATS_BUTTON_WIDTH, COMMON.BUTTON_HEIGHT)
-    resetButton:Disable()
-    local field = UI.Field(content, P.RESET_FIELD_X, y + P.RESET_FIELD_Y_OFFSET,
-        P.RESET_FIELD_WIDTH, COMMON.CONFIRM_FIELD_HEIGHT, P.RESET_FIELD_MAX_LETTERS)
-    field:SetScript("OnTextChanged", function(self)
-        resetButton:SetEnabled(self:GetText() == "RESET")
-    end)
-    field:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
-    field:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
-    resetButton:SetScript("OnClick", function()
-        if field:GetText() ~= "RESET" then return end
-        FF:ResetStatistics()
-        field:SetText("")
-        field:ClearFocus()
-        FF.Print("Character statistics reset; other characters' achievement progress preserved.")
-    end)
-    self.resetField = field
-
-    y = y - COMMON.SECTION_SKIP
-    AddText(content, "Cheater Apology", COMMON.SECTION_FONT, COMMON.LABEL_X, y)
-    y = y - COMMON.TITLE_SKIP
-    AddText(content, "Removes only the Cheater lockout. All workout statistics remain.", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
-    y = y - COMMON.FIELD_SKIP
-    AddText(content, "Type exactly: Whoops, I'm a cheater", "GameFontHighlight", COMMON.LABEL_X, y)
+    local apologyInstruction = AddText(content, "Type exactly: Whoops, I'm a cheater", "GameFontHighlight", COMMON.LABEL_X, y)
     y = y - COMMON.FIELD_SKIP
     local apology = UI.Field(content, COMMON.LABEL_X, y,
         P.APOLOGY_FIELD_WIDTH, COMMON.CONFIRM_FIELD_HEIGHT, P.APOLOGY_FIELD_MAX_LETTERS)
@@ -189,6 +166,10 @@ function FF:BuildGeneralTab()
     end)
     self.forgiveButton = forgive
     self.apologyField = apology
+    self.apologyControls = { apologyTitle, apologyDescription, apologyInstruction, apology, forgive }
+    self.apologyContent = content
+    self.apologyStartY = apologyStartY
+    self.apologyEndY = y
     content:SetHeight(-y + P.CONTENT_BOTTOM_PADDING)
 
     return panel
@@ -204,7 +185,10 @@ end
 -- Inputs: saved settings, active exercise count and Cheater state. Output: current UI values.
 function FF:RefreshOptions()
     if not self.db or not self.intervalSlider then return end
-    self.forgiveButton:SetEnabled(self.stats.cheater and self.apologyField:GetText() == "Whoops, I'm a cheater")
+    local showApology = self.stats.cheater == true
+    for _, control in ipairs(self.apologyControls) do control:SetShown(showApology) end
+    self.apologyContent:SetHeight(-(showApology and self.apologyEndY or self.apologyStartY) + P.CONTENT_BOTTOM_PADDING)
+    self.forgiveButton:SetEnabled(showApology and self.apologyField:GetText() == "Whoops, I'm a cheater")
     self.settingsSubtitle:SetText(self.stats.cheater
         and "WORKOUTS LOCKED: Apologize below or reset statistics to resume."
         or (#self:EnabledExercises() == 0

@@ -44,13 +44,16 @@ function FF:AwardInventorAchievement()
         or self.accountStats.achievementDates.inventor then return end
     self.accountStats.achievementDates.inventor = time()
     self:AnnounceAchievement(achievement)
+    self:QueueAchievementAlert(achievement)
 end
 
 -- Award the secret achievement once, as soon as the cheater lock activates.
 function FF:AwardCheaterAchievement()
     if not self.accountStats.cheater or self.accountStats.achievementDates.cheater11 then return end
     self.accountStats.achievementDates.cheater11 = time()
-    self:AnnounceAchievement(self:GetAchievementByID("cheater11"))
+    local achievement = self:GetAchievementByID("cheater11")
+    self:AnnounceAchievement(achievement)
+    self:QueueAchievementAlert(achievement)
 end
 
 function FF:CheckAchievementUnlocks(exercise, completed, cheatedNow)
@@ -73,8 +76,8 @@ function FF:CheckAchievementUnlocks(exercise, completed, cheatedNow)
         local delta = 0
         if completed and achievement.kind == "total" then
             delta = 1
-        elseif completed and achievement.kind == "walking" then
-            delta = exercise.durationMinutes or 0
+        elseif completed and achievement.kind == "walking" and exercise.group == "Walking Pad" then
+            delta = 1
         elseif not completed and achievement.kind == "skipped" then
             delta = 1
         end
@@ -104,6 +107,7 @@ function FF:CheckAchievementUnlocks(exercise, completed, cheatedNow)
         if not self.accountStats.achievementDates[achievement.id] then
             self.accountStats.achievementDates[achievement.id] = time()
             self:AnnounceAchievement(achievement)
+            self:QueueAchievementAlert(achievement)
         end
     end
 end

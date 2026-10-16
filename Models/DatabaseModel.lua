@@ -80,13 +80,17 @@ function FF:InitializeStatistics()
     stats.cheater = stats.cheater == true
     stats.inventor = stats.inventor == true
     stats.customOtherSessions = stats.customOtherSessions or 0
+    -- Keep the legacy key but count Walking Pad sessions, not minutes or unrelated workouts.
     if type(stats.walkingMinutes) ~= "number" then
-        local durations = { easywalk = 3, briskwalk = 2, recoverywalk = 4, steadywalk = 5 }
-        local minutes = 0
-        for id, duration in pairs(durations) do
-            minutes = minutes + (stats.lifetime[id] or 0) * duration
+        stats.walkingMinutes = self:CountWalkingPadSessions(stats.lifetime)
+    end
+    -- Persist custom exercise names/categories with the character's workout history.
+    stats.exerciseHistory = stats.exerciseHistory or {}
+    for _, exercise in ipairs(self.db.customExercises) do
+        if (stats.lifetime[exercise.id] or 0) > 0 or (stats.skipsLifetime[exercise.id] or 0) > 0 then
+            stats.exerciseHistory[exercise.id] = stats.exerciseHistory[exercise.id]
+                or { name = exercise.name, group = exercise.group }
         end
-        stats.walkingMinutes = minutes
     end
     local account = self.db.accountStats
     if type(account) ~= "table" then account = {}; self.db.accountStats = account end
@@ -98,6 +102,24 @@ function FF:InitializeStatistics()
     account.inventor = account.inventor == true
     account.cheater = account.cheater == true
     account.migratedCharacters = account.migratedCharacters or {}
+    account.resetGeneration = tonumber(account.resetGeneration) or 0
+    -- Old offline characters must not restore workout history after an account reset.
+    -- Keep non-statistical character preferences (such as popup layout) untouched.
+    if (tonumber(stats.resetGeneration) or 0) ~= account.resetGeneration then
+        stats.lifetime = {}
+        stats.levels = {}
+        stats.skipsLifetime = {}
+        stats.skipsLevels = {}
+        stats.achievementDates = {}
+        stats.completionTimes = {}
+        stats.exerciseHistory = {}
+        stats.cheater = false
+        stats.inventor = false
+        stats.customOtherSessions = 0
+        stats.walkingMinutes = 0
+        stats.lastAnnouncedLevel = nil
+    end
+    stats.resetGeneration = account.resetGeneration
     self.accountStats = account
 end
 
@@ -122,6 +144,16 @@ function FF:MigrateAccountStatistics()
             if not existing or stamp < existing then account.achievementDates[id] = stamp end
         end
         account.migratedCharacters[key] = true
+    end
+    -- Correct previously inflated Walking Pad counts using actual exercise IDs.
+    stats.walkingMinutes = self:CountWalkingPadSessions(stats.lifetime)
+    account.walkingMinutes = self:CountWalkingPadSessions(account.lifetime)
+    -- Remove falsely earned Walking Pad dates, preserving legitimate unlocks.
+    for _, achievement in ipairs(self.generalAchievements) do
+        if achievement.kind == "walking" and account.walkingMinutes < achievement.target then
+            account.achievementDates[achievement.id] = nil
+            stats.achievementDates[achievement.id] = nil
+        end
     end
     -- After migration, the account owns the lockout and earned achievements.
     stats.cheater = account.cheater

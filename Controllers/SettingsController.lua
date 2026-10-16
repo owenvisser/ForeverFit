@@ -1,6 +1,6 @@
 local _, FF = ...
 
--- Registers General as the settings root and constructs the remaining three tabs.
+-- Registers General as the settings root and constructs the remaining settings tabs.
 -- Input: loaded settings views and saved preferences. Output: registered Blizzard settings pages.
 function FF:BuildOptions()
     local panel = self:BuildGeneralTab()
@@ -10,6 +10,7 @@ function FF:BuildOptions()
     self.settingsPanel = panel
     self:BuildDefaultOptions()
     self:BuildCustomOptions()
+    self:BuildStatisticsTab()
     self:BuildInfoOptions()
     self:RefreshOptions()
 end

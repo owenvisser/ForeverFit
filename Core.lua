@@ -95,6 +95,9 @@ SlashCmdList.FOREVERFIT = function(message)
         if FF.state.pending then
             Print("Test reminder queued until you leave combat and close settings.")
         end
+    elseif cmd == "alerttest" then
+        -- Preview the alert without unlocking an achievement or saving progress.
+        FF:QueueAchievementAlert(FF.generalAchievements[1])
     elseif cmd == "stats" then
         FF:PrintStatistics()
     elseif cmd == "achievements" or cmd == "ach" then
