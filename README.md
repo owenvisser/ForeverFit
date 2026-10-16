@@ -1,61 +1,38 @@
 # Forever Fit
 
-**Version:** v1.1.0  
-**Client:** World of Warcraft: Forever
+**Version:** 1.1.1  
+**Client:** World of Warcraft: Forever (Camelot)
 
-Forever Fit is a World of Warcraft addon that reminds you to take short exercise breaks while adventuring in Azeroth. Complete real-life workout quests, track your sessions, and unlock WoW-themed **Fitness Challenges**—without prescribed repetition counts. You choose how much exercise is appropriate for you.
+Forever Fit is a Lua addon that prompts short real-world exercise breaks during WoW sessions. Players choose which workouts to include, respond **Completed** or **Skip** to reminders, review session statistics, and unlock account-wide **Fitness Challenges**. It tracks sessions rather than repetitions or weights.
 
 ## Features
 
-- **Workout reminders:** A configurable 10–60 minute timer, with optional reminders when boarding a flight-path taxi or gaining the Welcoming Campfire buff.
-- **Exercise selection:** No Equipment, Free Weights, and Walking Pad categories. Enable or disable individual exercises and categories; the rotating selection avoids immediate repeats when multiple exercises are enabled, unless there is only one exercise choice.
-- **Simple workout popup:** Exercise instructions, a Warcraft-themed quip, and **Completed** / **Skip** buttons. The popup can be previewed, moved, and resized in settings.
-- **Custom exercises:** Create, edit, and disable your own workouts, including an **Other** category.
-- **Statistics:** Track completed and skipped sessions, including per-character and per-level history. The addon also tracks account-wide totals used for Fitness Challenges.
-- **Fitness Challenges:** General, exercise-specific, and milestone achievements. Built-in exercises have five progression tiers—Bronze, Silver, Gold, Platinum, and Diamond—based on completed sessions. Earn **Fitness Points** and view progress in the in-game achievement interface.
-- **Achievement notifications:** Blizzard-style **Achievement Earned!** alerts with an icon, achievement name, and points shield. Multiple unlocks are queued and shown one at a time.
-- **Optional social announcements:** Share workout breaks or invitations with party members, announce achievements in guild chat, and report workout totals on level-up. Achievement titles posted through Forever Fit can be opened by other players running the addon.
-- **Optional sound effects:** Race-specific completion and skip sounds, with a Human Male Only override.
+- **Reminder sources:** Configurable 10–60-minute timer, optional flight-path taxi detection, and the Welcoming Campfire buff. Campfire reminders cannot trigger consecutively; another trigger resets eligibility.
+- **Exercise catalog:** No Equipment, Free Weights, and Walking Pad workouts in one data file, plus user-defined custom exercises.
+- **Workout UI:** Movable, resizable popup with instructions, WoW-themed quips, Completed/Skip actions, and optional sounds.
+- **Achievements:** Account-wide general, exercise-tier, milestone, and hidden Fitness Challenges. Blizzard-style achievement alerts queue sequentially; clicking an alert opens the relevant achievement.
+- **Statistics:** Per-character, per-level, and account-wide progress. The Statistics tab groups exercises by category and retains the history of deleted custom exercises.
+- **Settings and social features:** Individual exercise controls, party/guild announcements, level-up summaries, and a confirmed account-wide statistics-and-achievements reset.
 
-## Installation
+## Install
 
-ForeverFit is also available on **CurseForge** at the url **`https://www.curseforge.com/wow/addons/foreverfit`**
+1. Copy `ForeverFit/` into your WoW client's `Interface/AddOns/` directory.
+2. Check that `ForeverFit.toc` is directly inside that folder.
+3. Enable **Forever Fit** in the addon list, log in, and use `/ffit` for settings.
 
-If downloading directly from GitHub:
-1. Place the `ForeverFit` folder in your WoW client's `Interface/AddOns/` directory.
-2. Verify that `ForeverFit.toc` is directly inside `ForeverFit/`.
-3. Enable **Forever Fit** in the addon list and log in, or type `/reload`.
+Back up the relevant `WTF/Account/.../SavedVariables/` data before upgrading or testing resets. No third-party Lua libraries or additional addons are required by the packaged source.
 
-All statistics and achievement progress are stored in your `WTF/Account/.../SavedVariables/` files, so your data is saved unless you intentionally want to reset it.
-
-## Getting started
-
-Open the addon with `/ffit`. In the settings pages, choose a reminder interval, enable your preferred exercises, and configure optional taxi, campfire, sound, and social features. When a reminder appears, perform the workout at your preferred intensity and select **Completed** or **Skip**.
-
-Use **Default Exercises** to choose built-in workouts, **Custom Exercises** to manage your own, and **View Fit Challenges** or `/ffit achievements` to inspect achievement progress.
-
-## Slash commands
+## Commands
 
 | Command | Action |
 | --- | --- |
 | `/ffit` or `/foreverfit` | Open settings |
-| `/ffit test` | Show a test workout reminder without waiting for a trigger |
-| `/ffit alerttest` | Preview the achievement notification without awarding progress |
-| `/ffit stats` | Print workout statistics |
+| `/ffit test` | Queue a test workout reminder (normal restrictions apply) |
+| `/ffit alerttest` | Preview an achievement alert without awarding progress |
+| `/ffit stats` | Print workout statistics to chat |
 | `/ffit achievements` or `/ffit ach` | Open Fitness Challenges |
-| `/ffit status` | Show reminder interval and exercise rotation status |
-| `/ffit icons` | Check the built-in exercise and general-achievement icons |
-
-Test workout reminders respect the normal login grace period and other workout restrictions. The achievement alert test does not unlock achievements or modify statistics.
-
-## Settings and saved progress
-
-- **General:** Reminder interval, triggers, sounds, guild/party announcements, popup layout preview, and character-statistics reset.
-- **Default Exercises:** Built-in exercise categories and enable/disable choices.
-- **Custom Exercises:** Personal exercise definitions and their inclusion in the rotation.
-- **Info:** Addon information.
-
-`ForeverFitDB` stores account-wide configuration and achievement progress. `ForeverFitCharDB` stores character-specific statistics and state, including popup layout. The **Reset Statistics** option resets the current character's workout records while preserving other characters' contributions to account-wide achievements.
+| `/ffit status` | Show reminder and rotation status |
+| `/ffit icons` | Check built-in exercise and general-achievement icon references |
 
 ## Project structure
 
@@ -63,7 +40,6 @@ Test workout reminders respect the normal login grace period and other workout r
 ForeverFit/
 ├── ForeverFit.toc
 ├── Core.lua
-├── README.md
 ├── Data/
 │   ├── Exercises.lua
 │   └── AchievementDefinitions.lua
@@ -84,24 +60,43 @@ ForeverFit/
         ├── GeneralTab.lua
         ├── DefaultExercisesTab.lua
         ├── CustomExercisesTab.lua
+        ├── StatisticsTab.lua
         ├── InfoTab.lua
         ├── OptionsTheme.lua
         └── OptionsWidgets.lua
 ```
 
-`Data/` holds built-in content; `Models/` manages data and progression; `Controllers/` handles gameplay events and actions; and `Views/` draws the interface. `Core.lua` initializes the addon and registers slash commands. WoW loads Lua files in the order listed in `ForeverFit.toc`.
+**Data** defines bundled exercises and achievement metadata. **Models** own exercise selection, saved data, statistics, and progression. **Controllers** coordinate WoW events and actions. **Views** implement popups, achievement UI, and settings pages. `Core.lua` initializes the addon and registers slash commands; `ForeverFit.toc` controls file load order.
 
-For development, edit workout text in `Data/Exercises.lua`, achievement names and thresholds in `Data/AchievementDefinitions.lua`, notification styling in `Views/AchievementAlertView.lua`, and shared settings spacing and typography in `Views/Settings/OptionsTheme.lua`. Preserve established exercise and achievement IDs to avoid breaking existing progress.
+## Working on Forever Fit
+
+- **Edit exercises or quips:** `Data/Exercises.lua`
+- **Edit achievement definitions/tiers:** `Data/AchievementDefinitions.lua`
+- **Change reminder behavior:** `Controllers/WorkoutController.lua`
+- **Change achievement awards:** `Controllers/AchievementController.lua`
+- **Change alert styling:** `Views/AchievementAlertView.lua`
+- **Change settings layouts:** `Views/Settings/` (`OptionsTheme.lua` and `OptionsWidgets.lua` hold shared styling/widgets)
+- **Change recorded statistics:** `Models/StatisticsModel.lua` and `Models/DatabaseModel.lua`
+
+The addon uses Blizzard's frame and Settings APIs, Lua event callbacks, and timers; there is no build step. Keep exercise IDs and achievement IDs stable when updating content because they are referenced by saved progress. If adding Lua files, include them in `ForeverFit.toc` in dependency order.
+
+### Saved data
+
+`ForeverFitDB` holds account-wide configuration and achievement progress. `ForeverFitCharDB` holds character-specific history and state. Deleted custom workouts retain historical statistics. The **Reset Everything** action on the Statistics tab clears workout and achievement history across the account, including offline characters when they next log in; it preserves configuration and custom exercise definitions.
 
 ## Changelog
 
+### v1.1.1
+
+- Added a category-grouped **Statistics** tab with completed, skipped, and total sessions; preserved history for deleted custom exercises.
+- Fixed Walking Pad achievements progressing from unrelated workouts, including correction of affected saved progress.
+- Made achievement alerts clickable, opening the exact achievement earned.
+- Moved reset to Statistics and extended it to account-wide workout, achievement, and Cheater history, with `RESET ALL` confirmation.
+- Made Cheater Apology controls visible only while Cheater status is active.
+
 ### v1.1.0
 
-- Organized the addon into Data, Models, Controllers, and Views while retaining a single built-in exercise catalog.
-- Renamed settings files by tab and centralized reusable settings appearance and widgets.
-- Simplified workout instructions and custom exercise creation by removing prescribed repetition targets; continued tracking **completed sessions** rather than reps.
-- Updated Welcoming Campfire reminders to block consecutive campfire triggers until another reminder source fires.
-- Refined Fitness Challenges cards using Blizzard's Legacy Challenges artwork and added per-tier achievement icon support.
-- Added classic-style achievement unlock alerts, including the achievement icon, name, points shield, sequential notification queue, and `/ffit alerttest`.
-- Refined the achievement alert's native banner artwork, proportions, positioning, and shield number styling; removed the redundant “+1 Fitness Point” line.
-- Preserved established account-wide achievement progress, character statistics, and existing workout settings.
+- Reorganized the addon into Data / Models / Controllers / Views.
+- Kept workout progression session-based rather than prescribing repetitions.
+- Added and refined Blizzard-style achievement alerts, sequential notifications, and `/ffit alerttest`.
+- Refined Legacy Challenges styling and consecutive campfire-trigger behavior.
