@@ -69,7 +69,8 @@ function FF:RefreshFitnessPoints()
     frame.fitnessSummary.shield.Points:SetText(earned)
 end
 
-local groups = { "General", "Beginner", "Intermediate", "Expert", "Godly", "No Equipment", "Free Weights", "Walking Pad", "Other" }
+local groups = { "General", "Beginner", "Intermediate", "Expert", "Godly", "No Equipment", "Free Weights", "Walking Pad",
+    "Other" }
 local directGroups = { General = true, Beginner = true, Intermediate = true, Expert = true, Godly = true, Other = true }
 
 local function Text(parent, font, point, relative, x, y)
@@ -125,7 +126,7 @@ local function BuildCard(card)
     card.badgeNumber = card.shield:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     card.badgeNumber:SetJustifyH("CENTER")
     card.badgeNumber:SetPoint("CENTER", card.shield.Icon, "CENTER", -1, -4)
-    
+
     card.checkBackground = card.shield:CreateTexture(nil, "OVERLAY")
     card.checkBackground:SetAtlas("Legacy-Challenge-Cards-Date-BG", true)
     card.checkBackground:SetPoint("TOPRIGHT", card.shield, "TOPRIGHT", 0, -1)
@@ -212,12 +213,19 @@ function FF:BuildAchievements(legacy)
     frame.fitnessSummary = summary
     summary:Hide()
 
-    frame.selectedExercise = self.exercises[1]
+    frame.selectedExercise = nil
     frame.selectedTier = nil
     frame.selectedMilestone = nil
-    frame.selectedGroup = nil
-    frame.expandedGroups = { Beginner = false, Intermediate = false,
-        Expert = false, Godly = false, ["No Equipment"] = true, ["Free Weights"] = false, ["Walking Pad"] = false }
+    frame.selectedGroup = "General"
+    frame.expandedGroups = {
+        Beginner = false,
+        Intermediate = false,
+        Expert = false,
+        Godly = false,
+        ["No Equipment"] = false,
+        ["Free Weights"] = false,
+        ["Walking Pad"] = false
+    }
     frame.tierFilter = "all"
     local _, descriptionHeight = SystemFont_Shadow_Med1:GetFont()
     frame.expandedHeight = 122 + 30 + descriptionHeight - ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT
@@ -299,7 +307,8 @@ function FF:BuildAchievements(legacy)
                 end
                 button:SetHeight(25)
                 local selected = data.exercise and data.exercise == frame.selectedExercise
-                button.art:SetAtlas(selected and "Legacy-Challenge-Left-Sub-Tab-selected" or "Legacy-Challenge-Left-Sub-Tab")
+                button.art:SetAtlas(selected and "Legacy-Challenge-Left-Sub-Tab-selected" or
+                    "Legacy-Challenge-Left-Sub-Tab")
                 local label = data.exercise
                 button.label:SetText(label.name)
                 local color = selected and WHITE_FONT_COLOR or NORMAL_FONT_COLOR
@@ -427,7 +436,8 @@ function FF:ConfigureAchievementCard(card, achievement, i)
     card.backgroundMiddle:SetShown(expanded)
     card.backgroundBottom:SetShown(expanded)
     card.selected:SetShown(expanded)
-    card.ribbon:SetAtlas(reached and "Legacy-Challenge-Cards-Ribbon-Brown" or "Legacy-Challenge-Cards-Ribbon-Brown-Disable", true)
+    card.ribbon:SetAtlas(
+        reached and "Legacy-Challenge-Cards-Ribbon-Brown" or "Legacy-Challenge-Cards-Ribbon-Brown-Disable", true)
     card.icon.texture:SetTexture(self:ResolveIcon(achievement.icon))
     card.icon.texture:SetDesaturated(not reached and not expanded)
     card.name:SetText(achievement.name)
@@ -472,7 +482,8 @@ function FF:ConfigureAchievementCard(card, achievement, i)
     end
     card.criteria.ProgressBar:SetMinMaxValues(0, achievement.target)
     card.criteria.ProgressBar:SetValue(math.min(count, achievement.target))
-    card.criteria.ProgressBar.Text:SetText(string.format("%d / %d", math.min(count, achievement.target), achievement.target))
+    card.criteria.ProgressBar.Text:SetText(string.format("%d / %d", math.min(count, achievement.target),
+        achievement.target))
 end
 
 function FF:RefreshAchievements()
@@ -652,7 +663,8 @@ function FF:OpenFitChallenges()
         if FF:TryAttachLegacyButton() and FF.legacyHost:IsVisible() then
             FF:ShowAchievements()
         else
-            FF.Print("Could not open Fitness Challenges. Please open Legacy Challenges and click the Forever Challenges tab.")
+            FF.Print(
+                "Could not open Fitness Challenges. Please open Legacy Challenges and click the Forever Challenges tab.")
         end
     end)
 end

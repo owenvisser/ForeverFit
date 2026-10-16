@@ -3,9 +3,9 @@ local _, FF = ...
 FF.milestoneAchievements = {}
 for rank, entry in ipairs(FF.milestoneRanks) do
     FF.milestoneAchievements[#FF.milestoneAchievements + 1] = {
-        id = "other:" .. rank, name = FF.otherAchievementNames[rank], group = entry.group,
+        id = "other:" .. rank, name = FF.otherAchievementNames[rank], group = "Other",
         kind = "other", target = entry.required, points = 1,
-        icon = "Interface\\Icons\\INV_Misc_Note_01",
+        icon = entry.otherIcon or "Interface\\Icons\\INV_Misc_Note_01",
         description = "Complete " .. entry.required .. " custom workouts in the Other category.",
     }
     for track, spec in ipairs(FF.milestoneTracks) do
@@ -19,7 +19,7 @@ for rank, entry in ipairs(FF.milestoneRanks) do
             id = "milestone:" .. rank .. ":" .. track, name = entry.names[track],
             group = entry.group, kind = "milestone", exerciseIDs = exerciseIDs,
             rank = rank, required = entry.required, target = spec.target, points = 1,
-            icon = spec.icon,
+            icon = entry.icons and entry.icons[track] or spec.icon,
             description = string.format("Earn any %d of these %d exercise achievements.", spec.target, #exerciseIDs),
         }
     end
