@@ -10,6 +10,7 @@ FF.state = {
     noExercises = false,
     graceUntil = 0,
     loggedIn = false,
+    campfireTriggeredThisSession = false,
 }
 
 local function Print(message)
@@ -35,6 +36,7 @@ eventFrame:SetScript("OnEvent", function(_, event, addonName)
             FF:RefreshInventorName()
             FF:MigrateAccountStatistics()
             FF.state.loggedIn = true
+            FF.state.campfireTriggeredThisSession = false
             FF.state.graceUntil = GetTime() + 10
             FF.state.wasWelcomingCampfire = FF:HasWelcomingCampfire()
             FF:StartTimer()
@@ -87,6 +89,7 @@ SlashCmdList.FOREVERFIT = function(message)
             return
         end
         FF:CancelTimer()
+        FF.state.campfireTriggeredThisSession = false
         FF.state.pending = true
         FF:TryShowExercise()
         if FF.state.pending then

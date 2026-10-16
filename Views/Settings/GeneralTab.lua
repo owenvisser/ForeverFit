@@ -68,11 +68,11 @@ function FF:BuildGeneralTab()
     local settings = {
         { "guildLevelAnnounce", "Announce your exercise count and most completed exercise in guild chat." },
         { "guildAchievementAnnounce", "Announce earned achievements in guild chat." },
-        { "partyBreakAnnounce", "Tell party members when you're taking an exercise break" },
+        { "partyBreakAnnounce", "Tell party members when you're taking an exercise break." },
         { "partyInviteAnnounce", "Invite party members to join your exercise! ForeverFit together!" },
-        { "taxiBreak", "Trigger an exercise when boarding a flight-path taxi; unless, you need a bathroom break." },
-        { "campfireBreak", "Trigger an exercise when Welcoming Campfire begins." },
-        { "soundEnabled", "Play race-specific voice sounds for Completed (/cheer) and Skip (/chicken)." },
+        { "taxiBreak", "Trigger an exercise when boarding a flight-path taxi." },
+        { "campfireBreak", "Trigger an exercise when Welcoming Campfire begins (never twice in a row)." },
+        { "soundEnabled", "Play race-specific voice sounds for Completed and Skip." },
     }
     self.announceChecks = {}
     y = y - COMMON.SECTION_SKIP
@@ -95,7 +95,7 @@ function FF:BuildGeneralTab()
     y = y - P.DESCRIPTION_SKIP
     AddText(content, "Party options work independently and only for parties, not raids. Don't make the raid wait, workout before or after!", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
     y = y - P.DESCRIPTION_SKIP
-    AddText(content, "Flight-path reminders are optional; their timer restarts either Complete or Skip.", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
+    AddText(content, "The timer will stay paused until Complete or Skip is selected.", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
 
     y = y - COMMON.SECTION_SKIP
     AddText(content, "View your Achievements in the Fitness Challenges tab!", COMMON.SECTION_FONT, COMMON.LABEL_X, y)

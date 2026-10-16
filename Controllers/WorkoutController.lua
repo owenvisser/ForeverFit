@@ -165,8 +165,11 @@ function FF:OnCampfireAuraChanged()
     local newlyGained = active and not self.state.wasWelcomingCampfire
     self.state.wasWelcomingCampfire = active
     if not newlyGained or not self.db.campfireBreak or self:InLoginGrace()
+        or self.state.campfireTriggeredThisSession
         or self.stats.cheater or #self:EnabledExercises() == 0
         or self.state.pending or self.state.currentExercise then return end
+    -- Permit only one campfire-triggered reminder per login; other triggers remain available.
+    self.state.campfireTriggeredThisSession = true
     self:CancelTimer()
     self.state.pending = true
     self:TryShowExercise()
@@ -183,6 +186,7 @@ function FF:UpdateTaxiWatcher()
     state.taxiTicker = C_Timer.NewTicker(1, function()
         local onTaxi = UnitOnTaxi("player") == true
         if not FF.stats.cheater and not FF:InLoginGrace() and onTaxi and not FF.state.wasOnTaxi and not FF.state.pending and not FF.state.currentExercise then
+            FF.state.campfireTriggeredThisSession = false
             FF:CancelTimer()
             FF.state.pending = true
             FF:TryShowExercise()
@@ -206,6 +210,7 @@ function FF:StartTimer()
             return
         end
         FF.state.timer = nil
+        FF.state.campfireTriggeredThisSession = false
         FF.state.pending = true
         FF:TryShowExercise()
     end)
