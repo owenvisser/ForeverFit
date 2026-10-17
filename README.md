@@ -86,6 +86,10 @@ The addon uses Blizzard's frame and Settings APIs, Lua event callbacks, and time
 
 ## Changelog
 
+### v1.3.1
+
+- Added minimap button.
+
 ### v1.3.0
 
 - Added custom icons to all exercises.

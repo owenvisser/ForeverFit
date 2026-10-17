@@ -21,6 +21,8 @@ function FF:BuildGeneralTab()
             FF.db.campfireBreak = false
             FF.db.soundEnabled = true
             FF.db.soundHumanMaleOnly = false
+            FF.db.showMinimapButton = true
+            FF:UpdateMinimapButtonVisibility()
             for _, group in ipairs({ "No Equipment", "Free Weights", "Walking Pad", "Other" }) do
                 FF.db.enabledGroups[group] = true
             end
@@ -91,6 +93,12 @@ function FF:BuildGeneralTab()
             FF.db.soundHumanMaleOnly = self:GetChecked() == true
         end, P.SOUND_OVERRIDE_TEXT_WIDTH, "LEFT")
     self.soundHumanMaleOnlyCheck = humanOnly
+    y = y - COMMON.CHECKBOX_SKIP
+    self.announceChecks.showMinimapButton = UI.Checkbox(content, "Show minimap button",
+        COMMON.CHECKBOX_X, y, function(self)
+            FF.db.showMinimapButton = self:GetChecked() == true
+            FF:UpdateMinimapButtonVisibility()
+        end, P.CHECKBOX_TEXT_WIDTH, "LEFT")
     y = y - COMMON.CHECKBOX_SKIP
     y = y - P.DESCRIPTION_SKIP
     AddText(content, "Party options work independently and only for parties, not raids. Don't make the raid wait, workout before or after!", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)

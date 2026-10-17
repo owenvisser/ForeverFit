@@ -27,6 +27,8 @@ function FF:InitializeDatabase()
     if db.soundEnabled == nil then db.soundEnabled = true end
     db.soundEnabled = db.soundEnabled == true
     db.soundHumanMaleOnly = db.soundHumanMaleOnly == true
+    if db.showMinimapButton == nil then db.showMinimapButton = true end
+    db.showMinimapButton = db.showMinimapButton == true
     if type(db.customExercises) ~= "table" then db.customExercises = {} end
     db.customNextID = tonumber(db.customNextID) or 0
     self.baseExercises = self.baseExercises or self.exercises
