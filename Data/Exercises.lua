@@ -1,4 +1,5 @@
 local _, FF = ...
+local ICON_PATH = "Interface\\AddOns\\ForeverFit\\Data\\FF_Exercise_Icons\\"
 
 -- Icons are placeholders until original exercise instruction images are added.
 FF.exercises = {
@@ -6,171 +7,172 @@ FF.exercises = {
     id = "squats",
     group = "No Equipment",
     name = "Bodyweight Squats",
-    icon = "Interface\\Icons\\Ability_Warrior_Charge",
-    instructions = "Feet shoulder-width apart. Sit your hips back and down, then stand tall. Keep your heels grounded.",
+    icon = ICON_PATH .. "squats.blp",
+    instructions =
+    "Stand with feet about shoulder-width apart and toes slightly turned out. Brace your core, bend hips and knees to squat with heels down, then drive through your feet to stand.",
     quip = "It might be hard now, but you'll be able to carry more loot later."
   },
   {
     id = "calfraises",
     group = "No Equipment",
     name = "Calf Raises",
-    icon = "Interface\\Icons\\Ability_Hunter_Pathfinding",
+    icon = ICON_PATH .. "calfraises.blp",
     instructions =
-    "Stand tall, rise onto the balls of your feet, pause briefly, and lower your heels slowly. For added challenge, add incline to your toes.",
+    "Stand upright with feet hip-width apart. Press through the balls of your feet to raise your heels as high as possible, pause, then lower under control without bouncing.",
     quip = "Why do you think Cairnes calves are so big?"
   },
   {
     id = "plank",
     group = "No Equipment",
     name = "Forearm Plank",
-    icon = "Interface\\Icons\\Ability_Warrior_ShieldWall",
+    icon = ICON_PATH .. "plank.blp",
     instructions =
-    "Support yourself on forearms and toes, with shoulders over elbows. Keep your trunk braced without sagging.",
+    "Place forearms on the floor with elbows beneath shoulders and extend your legs behind you. Brace your abs and glutes, keeping a straight line from head to heels without sagging.",
     quip = "Without a few planks, that Barbaric Harness wouldn't look nearly as good."
   },
   {
     id = "jumpingjacks",
     group = "No Equipment",
     name = "Jumping Jacks",
-    icon = "Interface\\Icons\\Spell_Nature_Lightning",
+    icon = ICON_PATH .. "jumpingjacks.blp",
     instructions =
-    "Jump your feet apart as your arms rise overhead, then return to start. Step side-to-side for a low-impact option.",
+    "Stand tall with feet together and arms at your sides. Jump feet apart while raising arms overhead, land softly, then jump back to the start. Repeat with steady rhythm.",
     quip = "Valeera Sanguinar didn't get that nimble by standing in stealth all day."
   },
   {
     id = "pushups",
     group = "No Equipment",
     name = "Push-ups",
-    icon = "Interface\\Icons\\Ability_Warrior_StrengthOfArms",
+    icon = ICON_PATH .. "pushups.blp",
     instructions =
-    "Hands beneath shoulders, body straight. Lower your chest with control, pause, then press upward.",
+    "Place hands just wider than shoulders and extend your legs into a straight plank. Keep elbows angled back as you lower your chest, then press up without letting your hips sag.",
     quip = "The Scarlet Crusade isn't going to push itself back!"
   },
   {
     id = "lunges",
     group = "No Equipment",
     name = "Reverse Lunges",
-    icon = "Interface\\Icons\\Ability_Rogue_Sprint",
+    icon = ICON_PATH .. "lunges.blp",
     instructions =
-    "Step one foot back, lower with control, then return to standing; repeat for both legs. Hold a chair for balance if needed.",
+    "Stand tall and brace your core. Step one leg backward and lower until both knees bend near 90 degrees, keeping your front foot flat. Push through the front foot to stand; switch legs.",
     quip = "For the Horde! And for healthier knees."
   },
   {
     id = "wallpushups",
     group = "No Equipment",
     name = "Wall Push-ups",
-    icon = "Interface\\Icons\\Ability_Warrior_DefensiveStance",
+    icon = ICON_PATH .. "wallpushups.blp",
     instructions =
-    "Stand an arm's length from a wall. Bend your elbows to lean in, then push back while keeping your body aligned.",
+    "Face a wall with palms at shoulder height, slightly wider than your shoulders. Walk feet back, bend elbows to bring your chest toward the wall, then push away with your body straight.",
     quip = "Every build starts out with a strong foundation."
   },
   {
     id = "curls",
     group = "Free Weights",
     name = "Dumbbell Curls",
-    icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
+    icon = ICON_PATH .. "curls.blp",
     instructions =
-    "Keep elbows at your sides. Lift the dumbbells toward your shoulders, then lower slowly.",
+    "Stand holding dumbbells at your sides, palms forward. Keep upper arms close to your torso as you curl weights toward shoulders, then lower slowly without swinging.",
     quip = "You don't swing hammers like King Magni Bronzebeard without putting in a few curls."
   },
   {
     id = "deadlifts",
     group = "Free Weights",
     name = "Dumbbell Deadlifts",
-    icon = "Interface\\Icons\\Ability_Warrior_ColossusSmash",
+    icon = ICON_PATH .. "deadlifts.blp",
     instructions =
-    "With dumbbells at your sides, push hips back, keep your back neutral, and stand by driving through your feet.",
-    quip = "Picking up epic loot is a full-body workout."
+    "Hold dumbbells at your sides with feet hip-width apart. Brace your core, bend knees slightly and hinge hips back with a neutral spine. Push through your feet to stand tall.",
+    quip = "The proper way to pick up quest items."
   },
   {
     id = "gobletsquats",
     group = "Free Weights",
     name = "Goblet Squats",
-    icon = "Interface\\Icons\\Ability_Warrior_Charge",
+    icon = ICON_PATH .. "gobletsquats.blp",
     instructions =
-    "Hold one light dumbbell at your chest. Squat down with heels planted, then stand, keeping your chest lifted.",
-    quip = "This is what happens when you loot too much plate armor."
+    "Hold one dumbbell at chest level with both hands. Stand shoulder-width apart, brace your core and squat between your knees while keeping heels down. Push through your feet to stand.",
+    quip = "This is how goblins carry their gold bars."
   },
   {
     id = "laterals",
     group = "Free Weights",
     name = "Lateral Raises",
-    icon = "Interface\\Icons\\Ability_Druid_FlightForm",
+    icon = ICON_PATH .. "laterals.blp",
     instructions =
-    "With light dumbbells and soft elbows, lift arms to shoulder level out to your sides, then lower slowly.",
-    quip = "Spread your wings. Unfortunately, flying is still locked."
+    "Stand tall with dumbbells at your sides and elbows slightly bent. Raise arms out to shoulder height, leading with elbows and avoiding momentum. Lower slowly.",
+    quip = "Spread your wings. Not too hard though, no flying in Forever"
   },
   {
     id = "rows",
     group = "Free Weights",
     name = "One-arm Dumbbell Rows",
-    icon = "Interface\\Icons\\Ability_Hunter_MarkedForDeath",
+    icon = ICON_PATH .. "rows.blp",
     instructions =
-    "Brace one hand on a stable surface. Hinge at the hips and pull a dumbbell toward your hip, then lower.",
-    quip = "Pull harder! That raid isn't going to carry itself."
+    "Support one hand and knee on a sturdy bench; keep your back neutral. Pull the dumbbell toward your torso with elbow close to your side, squeeze your shoulder blade, then lower.",
+    quip = "Pull harder! Your healer has mana and the DPS are itching."
   },
   {
     id = "triceps",
     group = "Free Weights",
     name = "Overhead Triceps Extensions",
-    icon = "Interface\\Icons\\Ability_Warrior_TitansGrip",
+    icon = ICON_PATH .. "triceps.blp",
     instructions =
-    "Hold one light dumbbell securely overhead with both hands. Bend your elbows slowly behind your head, then extend them. Keep upper arms steady.",
-    quip = "The Light demands stronger triceps, champion!"
+    "Hold one dumbbell securely with both hands overhead. Keep upper arms steady as you bend your elbows to lower the weight behind your head, then extend your arms.",
+    quip = "The Light demands faith, discipline, and stronger triceps!"
   },
   {
     id = "press",
     group = "Free Weights",
     name = "Shoulder Press",
-    icon = "Interface\\Icons\\Ability_Warrior_TitansGrip",
+    icon = ICON_PATH .. "press.blp",
     instructions =
-    "From shoulder height, press light dumbbells overhead without arching your lower back. Lower with control.",
+    "Hold dumbbells at shoulder height with feet planted and core braced. Press overhead until your arms extend without arching your back, then lower slowly to your shoulders.",
     quip =
-    "Believe it or not, there's no room between Varian Wrynn's shoulders and those massive pauldrons. Keep pressing!"
+    "Believe it or not, there's no room between Varian Wrynn's shoulders and those massive pauldrons!"
   },
   {
     id = "shrugs",
     group = "Free Weights",
     name = "Shoulder Shrugs",
-    icon = "Interface\\Icons\\Ability_Warrior_BattleShout",
+    icon = ICON_PATH .. "shrugs.blp",
     instructions =
-    "With light dumbbells at your sides, lift both shoulders toward your ears, pause, then lower without rolling them.",
-    quip = "Raise those traps like you just spotted Onyxia!"
+    "Stand tall with dumbbells at your sides and arms straight. Raise shoulders directly toward your ears without rolling them or bending elbows, pause, then lower slowly.",
+    quip = "/shrug, but heavier. Much heavier."
   },
   {
     id = "easywalk",
     group = "Walking Pad",
     name = "Easy Walk",
-    icon = "Interface\\Icons\\Inv_Pet_Speedy",
+    icon = ICON_PATH .. "easywalk.blp",
     instructions =
-    "Turn on your walking pad and walk at a comfortable pace. Keep your gaze forward and use the walking pad's safety features if necessary.",
+    "Stand on the walking pad and start at a low speed. Walk with natural strides, relaxed shoulders and eyes forward; adjust speed to stay comfortable.",
     quip = "Just press W."
   },
   {
     id = "briskwalk",
     group = "Walking Pad",
     name = "Brisk Walk",
-    icon = "Interface\\Icons\\Warrior_talent_icon_Skirmisher",
+    icon = ICON_PATH .. "briskwalk.blp",
     instructions =
-    "Turn on your walking pad and walk at a pace that feels fast but still controlled. Do not run or overreach your stride.",
+    "Begin at an easy pace, then gradually increase speed until your breathing quickens but your stride remains controlled. Look ahead, stand upright and avoid running.",
     quip = "Pretend you're PirateSoftware in Dire Maul."
   },
   {
     id = "inclineeasy",
     group = "Walking Pad",
     name = "Easy Incline Walk",
-    icon = "Interface\\Icons\\Achievement_Zone_RedridgeMountains",
+    icon = ICON_PATH .. "inclineeasy.blp",
     instructions =
-    "If your walking pad supports incline, choose a gentle setting and walk at a comfortable pace. Hold a natural upright posture.",
+    "If your walking pad supports incline, choose a gentle grade and start at a comfortable speed. Keep your torso upright, look ahead and use natural steps.",
     quip = "On the way to the icy mountains of dun morough, taking in the view."
   },
   {
     id = "inclinebrisk",
     group = "Walking Pad",
     name = "Brisk Incline Walk",
-    icon = "Interface\\Icons\\Warrior_talent_icon_Blitz",
+    icon = ICON_PATH .. "inclinebrisk.blp",
     instructions =
-    "If your walking pad supports incline, choose a manageable incline and brisk walk for five minutes. Reduce speed or incline if needed.",
-    quip = "Brave the climb to Mount Hyjal, hero!"
+    "If your walking pad supports incline, set a manageable grade and gradually increase to a brisk pace. Stay upright, walk without overstriding and ease off if needed.",
+    quip = "Brave the climb to Mount Hyjal!"
   },
 }

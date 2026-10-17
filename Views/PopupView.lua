@@ -80,7 +80,7 @@ local function CreatePopup(preview)
     popup.title:SetText(preview and "FOREVER FIT (PREVIEW)" or "FOREVER FIT")
 
     popup.subtitle = popup:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    popup.subtitle:SetPoint("TOPLEFT", popup.title, "BOTTOMLEFT", 0, -5)
+    popup.subtitle:SetPoint("TOPLEFT", popup.title, "BOTTOMLEFT", 0, -1)
     popup.subtitle:SetText(preview and "Drag to move; use the corner to resize" or "A quick quest for your health")
 
     local close = CreateFrame("Button", nil, popup, "UIPanelCloseButton")
@@ -91,7 +91,7 @@ local function CreatePopup(preview)
 
     popup.icon = popup:CreateTexture(nil, "ARTWORK")
     popup.icon:SetSize(72, 72)
-    popup.icon:SetPoint("TOPLEFT", 25, -72)
+    popup.icon:SetPoint("TOPLEFT", 25, -52)
     popup.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
 
     popup.exerciseName = popup:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -103,8 +103,8 @@ local function CreatePopup(preview)
     popup.target:SetJustifyH("LEFT")
 
     popup.instructions = popup:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    popup.instructions:SetPoint("TOPLEFT", popup.target, "BOTTOMLEFT", 0, -7)
-    popup.instructions:SetHeight(DEFAULT_HEIGHT - 197)
+    popup.instructions:SetPoint("TOPLEFT", popup.target, "BOTTOMLEFT", 0, 7)
+    popup.instructions:SetHeight(DEFAULT_HEIGHT - 120)
     popup.instructions:SetJustifyH("LEFT")
     popup.instructions:SetJustifyV("TOP")
 
@@ -118,7 +118,7 @@ local function CreatePopup(preview)
         self.exerciseName:SetWidth(width - 138)
         self.target:SetWidth(width - 138)
         self.instructions:SetWidth(width - 138)
-        self.instructions:SetHeight(math.max(1, height - 197))
+        self.instructions:SetHeight(math.max(1, height - 120))
         self.quip:SetWidth(width - 50)
     end)
     popup.exerciseName:SetWidth(DEFAULT_WIDTH - 138)
@@ -178,7 +178,7 @@ end
 function FF:ShowPopupPreview()
     local popup = self.previewPopup
     local exercise = self.baseExercises[1]
-    popup.icon:SetTexture(self:ResolveIcon(exercise.icon))
+    popup.icon:SetTexture(exercise.icon)
     popup.exerciseName:SetText(exercise.name)
     popup.instructions:SetText(exercise.instructions)
     popup.quip:SetText('"Preview only — no workout is recorded."')
@@ -188,7 +188,7 @@ end
 
 function FF:ShowExercisePopup(exercise)
     local popup = self.popup
-    popup.icon:SetTexture(self:ResolveIcon(exercise.icon))
+    popup.icon:SetTexture(exercise.icon)
     popup.exerciseName:SetText(exercise.name)
     popup.instructions:SetText(exercise.instructions)
     popup.quip:SetText('"' .. exercise.quip .. '"')

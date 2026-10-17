@@ -86,6 +86,12 @@ The addon uses Blizzard's frame and Settings APIs, Lua event callbacks, and time
 
 ## Changelog
 
+### v1.3.0
+
+- Added custom icons to all exercises.
+- Revised quips on all exercises.
+- Adjusted popup for exercises to be more customizable in size.
+
 ### v1.2.0
 
 - Added a category-grouped **Statistics** tab with completed, skipped, and total sessions; preserved history for deleted custom exercises.
