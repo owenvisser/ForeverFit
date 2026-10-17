@@ -24,8 +24,6 @@ function FF:BuildInfoOptions()
 
     local y = COMMON.INITIAL_Y
     UI.Label(content, "Forever Fit", COMMON.TITLE_FONT, COMMON.LABEL_X, y, P.TEXT_WIDTH, "LEFT")
-    y = y - COMMON.TITLE_SKIP
-    UI.Label(content, "About", COMMON.SECTION_FONT, COMMON.LABEL_X, y, P.TEXT_WIDTH, "LEFT")
     y = y - COMMON.SECTION_SKIP
     local intro = UI.Label(content, description, "GameFontHighlight", COMMON.LABEL_X, y,
         P.TEXT_WIDTH, "LEFT")
