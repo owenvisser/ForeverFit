@@ -3,16 +3,16 @@
 **Version:** 1.1.1  
 **Client:** World of Warcraft: Forever (Camelot)
 
-Forever Fit is a Lua addon that prompts short real-world exercise breaks during WoW sessions. Players choose which workouts to include, respond **Completed** or **Skip** to reminders, review session statistics, and unlock account-wide **Fitness Challenges**. It tracks sessions rather than repetitions or weights.
+Forever Fit is a Lua addon that prompts short real-world exercise breaks during WoW sessions. Players choose which workouts to include, respond **I'll do it!** or **Skip** to reminders, review session statistics, and unlock account-wide **Fitness Challenges**. It tracks sessions rather than repetitions or weights.
 
 ## Features
 
-- **Reminder sources:** Configurable 10–60-minute timer, optional flight-path taxi detection, and the Welcoming Campfire buff. Campfire reminders cannot trigger consecutively; another trigger resets eligibility.
+- **Reminder sources:** Configurable 10–60-minute timer, optional flight-path taxi detection, and the Welcoming Campfire buff. Timer reminders defer until combat ends. Campfire reminders cannot trigger consecutively; another trigger resets eligibility.
 - **Exercise catalog:** No Equipment, Free Weights, and Walking Pad workouts in one data file, plus user-defined custom exercises.
-- **Workout UI:** Movable, resizable popup with instructions, WoW-themed quips, Completed/Skip actions, and optional sounds.
+- **Workout UI:** Movable, resizable popup with instructions, WoW-themed quips, I'll do it!/Skip actions, and optional sounds.
 - **Achievements:** Account-wide general, exercise-tier, milestone, and hidden Fitness Challenges. Blizzard-style achievement alerts queue sequentially; clicking an alert opens the relevant achievement.
 - **Statistics:** Per-character, per-level, and account-wide progress. The Statistics tab groups exercises by category and retains the history of deleted custom exercises.
-- **Settings and social features:** Individual exercise controls, party/guild announcements, level-up summaries, and a confirmed account-wide statistics-and-achievements reset.
+- **Settings and social features:** Individual exercise controls, party/guild announcements, level-up summaries, and a confirmed account-wide statistics-and-achievements reset. No party message is sent when a reminder appears. Clicking I'll do it! sends the configured party break/invite messages; Skip optionally sends a couch-potato message (off by default). X silently dismisses without recording a result or posting to chat.
 
 ## Install
 

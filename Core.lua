@@ -3,10 +3,10 @@ local ADDON_NAME, FF = ...
 FF.state = {
     timer = nil,
     timerVersion = 0,
+    timerEndTime = nil,
     settingsOpen = false,
     pending = false,
     currentExercise = nil,
-    partyAnnounced = false,
     noExercises = false,
     graceUntil = 0,
     loggedIn = false,
@@ -128,7 +128,7 @@ SlashCmdList.FOREVERFIT = function(message)
                 used = used + 1
             end
         end
-        Print("Interval: " .. interval .. "; enabled exercises: " .. #enabled .. "; rotation: " .. used .. "/" .. #enabled .. " completed" .. (FF.stats.cheater and "; workouts LOCKED (reset statistics to resume)" or (#enabled == 0 and "; reminders PAUSED" or "")))
+        Print("Interval: " .. interval .. (FF.db.disableTimer and " (timer disabled)" or "") .. "; enabled exercises: " .. #enabled .. "; rotation: " .. used .. "/" .. #enabled .. " completed" .. (FF.stats.cheater and "; workouts LOCKED (reset statistics to resume)" or (#enabled == 0 and "; reminders PAUSED" or "")))
     else
         FF:OpenSettings()
     end

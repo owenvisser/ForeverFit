@@ -52,7 +52,7 @@ function FF:BuildMinimapButton()
     button:SetSize(31, 31)
     button:SetFrameStrata("MEDIUM")
     button:SetFrameLevel(Minimap:GetFrameLevel() + 8)
-    button:RegisterForClicks("LeftButtonUp")
+    button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     button:RegisterForDrag("LeftButton")
     button:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
 
@@ -109,8 +109,23 @@ function FF:BuildMinimapButton()
     UpdateMinimapPosition()
     self:UpdateMinimapButtonVisibility()
 
-    button:SetScript("OnClick", function()
-        if SettingsPanel and SettingsPanel:IsShown() and FF.state.settingsOpen then
+    button:SetScript("OnClick", function(_, mouseButton)
+        if mouseButton == "RightButton" then
+            MenuUtil.CreateContextMenu(button, function(_, rootDescription)
+                rootDescription:CreateButton(FF.db.disableTimer and "Enable timer" or "Disable timer", function()
+                    FF:SetTimerDisabled(not FF.db.disableTimer)
+                end)
+                if not FF.db.disableTimer then
+                    rootDescription:CreateTitle(string.format("Interval: %d min", FF.db.minutes))
+                    local remaining = FF.state.timerEndTime and math.max(0, math.ceil(FF.state.timerEndTime - GetTime()))
+                    if remaining then
+                        rootDescription:CreateTitle(string.format("Next reminder: %dm %02ds", math.floor(remaining / 60), remaining % 60))
+                    else
+                        rootDescription:CreateTitle("Next reminder: paused")
+                    end
+                end
+            end)
+        elseif SettingsPanel and SettingsPanel:IsShown() and FF.state.settingsOpen then
             HideUIPanel(SettingsPanel)
         else
             FF:OpenSettings()

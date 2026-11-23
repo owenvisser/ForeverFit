@@ -13,10 +13,12 @@ function FF:BuildGeneralTab()
         function() FF:RefreshOptions() end,
         function()
             FF.db.minutes = 30
+            FF:SetTimerDisabled(false)
             FF.db.guildLevelAnnounce = false
             FF.db.guildAchievementAnnounce = true
             FF.db.partyBreakAnnounce = true
             FF.db.partyInviteAnnounce = false
+            FF.db.partySkipAnnounce = false
             FF.db.taxiBreak = false
             FF.db.campfireBreak = false
             FF.db.soundEnabled = true
@@ -48,6 +50,10 @@ function FF:BuildGeneralTab()
     self.settingsSubtitle = subtitle
 
     y = y - COMMON.INTRO_SKIP
+    self.disableTimerCheck = UI.Checkbox(content, "Disable timer", COMMON.CHECKBOX_X, y, function(self)
+        FF:SetTimerDisabled(self:GetChecked())
+    end, P.CHECKBOX_TEXT_WIDTH, "LEFT")
+    y = y - COMMON.CHECKBOX_SKIP
     AddText(content, "Reminder interval", COMMON.LABEL_FONT, COMMON.LABEL_X, y)
     self.intervalLabel = AddText(content, "", "GameFontHighlight", P.SLIDER_LABEL_X, y)
     y = y - COMMON.FIELD_SKIP
@@ -72,9 +78,10 @@ function FF:BuildGeneralTab()
         { "guildAchievementAnnounce", "Announce earned achievements in guild chat." },
         { "partyBreakAnnounce", "Tell party members when you're taking an exercise break." },
         { "partyInviteAnnounce", "Invite party members to join your exercise! ForeverFit together!" },
+        { "partySkipAnnounce", "Tell party members when you Skip (couch potato message)." },
         { "taxiBreak", "Trigger an exercise when boarding a flight-path taxi." },
         { "campfireBreak", "Trigger an exercise when Welcoming Campfire begins (never twice in a row)." },
-        { "soundEnabled", "Play race-specific voice sounds for Completed and Skip." },
+        { "soundEnabled", "Play race-specific voice sounds for I'll do it! and Skip." },
     }
     self.announceChecks = {}
     y = y - COMMON.SECTION_SKIP
@@ -103,7 +110,9 @@ function FF:BuildGeneralTab()
     y = y - P.DESCRIPTION_SKIP
     AddText(content, "Party options work independently and only for parties, not raids. Don't make the raid wait, workout before or after!", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
     y = y - P.DESCRIPTION_SKIP
-    AddText(content, "The timer will stay paused until Complete or Skip is selected.", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
+    AddText(content, "Party messages send only when you click I'll do it! or Skip (if enabled).", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
+    y = y - P.DESCRIPTION_SKIP
+    AddText(content, "When enabled, the timer resumes after I'll do it!, Skip, or X closes a reminder.", COMMON.SUBTITLE_FONT, COMMON.LABEL_X, y)
 
     y = y - COMMON.SECTION_SKIP
     AddText(content, "View your Achievements in the Fitness Challenges tab!", COMMON.SECTION_FONT, COMMON.LABEL_X, y)
@@ -205,6 +214,7 @@ function FF:RefreshOptions()
     self.settingsSubtitle:SetTextColor(self.stats.cheater and 1 or 0.95, self.stats.cheater and 0.35 or 0.86, self.stats.cheater and 0.30 or 0.74)
     self.settingControls = true
     self.intervalSlider:SetValue(self.db.minutes)
+    self.disableTimerCheck:SetChecked(self.db.disableTimer)
     for key, checkbox in pairs(self.announceChecks) do
         checkbox:SetChecked(self.db[key])
     end

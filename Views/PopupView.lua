@@ -86,7 +86,7 @@ local function CreatePopup(preview)
     local close = CreateFrame("Button", nil, popup, "UIPanelCloseButton")
     close:SetPoint("TOPRIGHT", -5, -6)
     close:SetScript("OnClick", function()
-        if preview then FF:HidePopupPreview() else FF:DismissExercise(false) end
+        if preview then FF:HidePopupPreview() else FF:CloseExercisePopup() end
     end)
 
     popup.icon = popup:CreateTexture(nil, "ARTWORK")
@@ -129,7 +129,7 @@ local function CreatePopup(preview)
     local completedButton = CreateFrame("Button", nil, popup, "UIPanelButtonTemplate")
     completedButton:SetSize(128, 26)
     completedButton:SetPoint("BOTTOMRIGHT", popup, "BOTTOM", -7, 17)
-    completedButton:SetText("Completed")
+    completedButton:SetText("I'll do it!")
     completedButton:SetScript("OnClick", function()
         if preview then FF:HidePopupPreview() else FF:DismissExercise(true) end
     end)

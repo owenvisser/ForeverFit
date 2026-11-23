@@ -30,26 +30,35 @@ function FF:AnnounceLevelWorkouts(newLevel)
     ), "GUILD")
 end
 
--- Addon achievements are announced as plain text in guild chat. The receiving
--- Forever Fit addon renders the title as a locally clickable link.
--- Invite the party only when a real popup appears; never announce in a raid.
+-- Send the normal party announcement only when the player chooses "I'll do it!".
+-- Party chat is never used in raids.
 function FF:AnnouncePartyExercise(exercise)
     if not IsInGroup() or IsInRaid() then return false end
     if not self.db.partyBreakAnnounce and not self.db.partyInviteAnnounce then return false end
     local player = UnitName("player") or "An adventurer"
     if self.db.partyBreakAnnounce then
         C_ChatInfo.SendChatMessage(string.format(
-            "[Forever Fit] BRB! %s got a real-life quest: %s (%s). Give me a moment to grind some Strength!",
-            player, exercise.name
+            "[Forever Fit] BRB, heroes! %s got a real-life quest: %s (%s). Give me a moment to grind some Strength!",
+            player, exercise.name, exercise.group
         ), "PARTY")
     end
     if self.db.partyInviteAnnounce then
         C_ChatInfo.SendChatMessage(string.format(
-            "[Forever Fit] Feel free to join me for %s (%s)! Rewards: +1 IRL Stamina and bragging rights.",
-            exercise.name
+            "[Forever Fit] Bonus party quest: join me for %s (%s)! Rewards: +1 IRL Stamina and bragging rights.",
+            exercise.name, exercise.group
         ), "PARTY")
     end
     return true
+end
+
+-- Sends an optional party-only message when Skip is explicitly pressed.
+-- Input: current party and saved skip preference. Output: one party chat line if enabled.
+function FF:AnnouncePartySkip()
+    if not self.db.partySkipAnnounce or not IsInGroup() or IsInRaid() then return end
+    C_ChatInfo.SendChatMessage(string.format(
+        "[Forever Fit] %s decided to be a couch potato instead! 🛋️🥔",
+        UnitName("player") or "An adventurer"
+    ), "PARTY")
 end
 
 function FF:OnPlayerLevelUp(newLevel)
@@ -136,17 +145,29 @@ function FF:StopForCheater()
     end
     self.state.pending = false
     self.state.currentExercise = nil
-    self.state.partyAnnounced = false
     if self.popup then self.popup:Hide() end
 end
 
 function FF:CancelTimer()
     local state = self.state
     state.timerVersion = state.timerVersion + 1
+    state.timerEndTime = nil
     if state.timer then
         state.timer:Cancel()
         state.timer = nil
     end
+end
+
+-- Enables/disables only periodic reminders; campfire and taxi triggers remain available.
+-- Input: disabled is a boolean. Output: saved preference and updated timer/settings controls.
+function FF:SetTimerDisabled(disabled)
+    self.db.disableTimer = disabled == true
+    if self.db.disableTimer then
+        self:CancelTimer()
+    else
+        self:StartTimer()
+    end
+    self:RefreshOptions()
 end
 
 -- A one-second poll avoids the race between PLAYER_CONTROL_LOST and UnitOnTaxi.
@@ -197,19 +218,21 @@ end
 
 function FF:StartTimer()
     self:CancelTimer()
-    if self.stats.cheater or #self:EnabledExercises() == 0 then return end
+    if self.db.disableTimer or self.stats.cheater or #self:EnabledExercises() == 0 then return end
     local state = self.state
     if state.settingsOpen or state.pending or state.currentExercise then
         return
     end
 
     local seconds = math.max(self.db.minutes * 60, math.ceil(self.state.graceUntil - GetTime()))
+    state.timerEndTime = GetTime() + seconds
     local version = state.timerVersion
     state.timer = C_Timer.NewTimer(seconds, function()
         if FF.state.timerVersion ~= version then
             return
         end
         FF.state.timer = nil
+        FF.state.timerEndTime = nil
         FF.state.campfireTriggeredThisSession = false
         FF.state.pending = true
         FF:TryShowExercise()
@@ -232,18 +255,24 @@ function FF:TryShowExercise()
         state.pending = false
         return
     end
-    if not state.pending or state.settingsOpen or InCombatLockdown() then
+    if not state.pending or state.settingsOpen or UnitAffectingCombat("player") or InCombatLockdown() then
         return
     end
     if not state.currentExercise then
         state.currentExercise = self:ChooseExercise(enabled)
-        state.partyAnnounced = false
     end
     state.pending = false
     self:ShowExercisePopup(state.currentExercise)
-    if not state.partyAnnounced then
-        state.partyAnnounced = self:AnnouncePartyExercise(state.currentExercise)
-    end
+end
+
+-- Silently closes the current reminder and resumes the normal interval.
+-- Used by X and by I'll do it!/Skip after their respective actions are handled.
+function FF:CloseExercisePopup()
+    if not self.state.currentExercise then return end
+    self.popup:Hide()
+    self.state.currentExercise = nil
+    self.state.pending = false
+    self:StartTimer()
 end
 
 function FF:DismissExercise(completed)
@@ -251,18 +280,19 @@ function FF:DismissExercise(completed)
         self:StopForCheater()
         return
     end
-    if not self.state.currentExercise then
+    if not self.state.currentExercise or UnitAffectingCombat("player") or InCombatLockdown() then
         return
+    end
+    local exercise = self.state.currentExercise
+    if completed then
+        self:AnnouncePartyExercise(exercise)
     end
     self:PlayWorkoutSound(completed)
     if completed then
-        self:RecordCompletion(self.state.currentExercise)
+        self:RecordCompletion(exercise)
     else
-        self:RecordSkip(self.state.currentExercise)
+        self:RecordSkip(exercise)
+        self:AnnouncePartySkip()
     end
-    self.popup:Hide()
-    self.state.currentExercise = nil
-    self.state.partyAnnounced = false
-    self.state.pending = false
-    self:StartTimer()
+    self:CloseExercisePopup()
 end

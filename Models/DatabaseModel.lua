@@ -11,6 +11,8 @@ function FF:InitializeDatabase()
         db.minutes = 30
     end
     db.minutes = math.floor(math.max(10, math.min(60, db.minutes)) + 0.5)
+    if db.disableTimer == nil then db.disableTimer = db.timerDisabled == true end
+    db.disableTimer = db.disableTimer == true
     -- Retire the 10-second developer override while preserving all other settings.
     db.developer = nil
     -- Migrate the former combined switches without changing existing preferences.
@@ -18,10 +20,12 @@ function FF:InitializeDatabase()
     if db.guildAchievementAnnounce == nil then db.guildAchievementAnnounce = db.guildAnnounce ~= false end
     if db.partyBreakAnnounce == nil then db.partyBreakAnnounce = db.partyAnnounce ~= false end
     if db.partyInviteAnnounce == nil then db.partyInviteAnnounce = false end
+    if db.partySkipAnnounce == nil then db.partySkipAnnounce = false end
     db.guildLevelAnnounce = db.guildLevelAnnounce == true
     db.guildAchievementAnnounce = db.guildAchievementAnnounce == true
     db.partyBreakAnnounce = db.partyBreakAnnounce == true
     db.partyInviteAnnounce = db.partyInviteAnnounce == true
+    db.partySkipAnnounce = db.partySkipAnnounce == true
     db.taxiBreak = db.taxiBreak == true
     db.campfireBreak = db.campfireBreak == true
     if db.soundEnabled == nil then db.soundEnabled = true end
